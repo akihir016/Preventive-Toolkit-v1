@@ -180,18 +180,40 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub BtnDismTools_Click(sender As Object, e As EventArgs) Handles BtnDismTools.Click
-        ' This is a placeholder as DISM usually runs from an elevated command prompt.
-        ' For a full implementation, you might need to run a batch script or a PowerShell script
-        ' with administrative privileges. For simplicity, we'll just open cmd.exe here.
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Try
-            Process.Start("cmd.exe")
-            MessageBox.Show("For DISM and other command-line tools, please run as administrator and type commands manually.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Dim psi As New ProcessStartInfo
+            psi.FileName = "cmd.exe"
+            psi.Arguments = "/c DISM /Online /Cleanup-Image /ScanHealth & pause"
+            psi.Verb = "runas" ' Request administrator privileges
+            psi.UseShellExecute = True ' Required for Verb="runas"
+
+            Process.Start(psi)
+        Catch ex As ComponentModel.Win32Exception
+            ' Handle case where user cancels UAC prompt or other admin rights issues
+            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Catch ex As Exception
-            MessageBox.Show("Error launching Command Prompt: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Error launching DISM ScanHealth: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+
     End Sub
 
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Try
+            Dim psi As New ProcessStartInfo
+            psi.FileName = "cmd.exe"
+            psi.Arguments = "/c DISM /Online /Cleanup-Image /RestoreHealth & pause"
+            psi.Verb = "runas" ' Request administrator privileges
+            psi.UseShellExecute = True ' Required for Verb="runas"
+
+            Process.Start(psi)
+        Catch ex As ComponentModel.Win32Exception
+            ' Handle case where user cancels UAC prompt or other admin rights issues
+            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            MessageBox.Show("Error launching DISM RestoreHealth: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
     ' --- Ping Functionality ---
 
     Private Async Sub BtnPing_Click(sender As Object, e As EventArgs) Handles btnPing.Click
@@ -387,5 +409,6 @@ Public Class Form1
     Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
         MessageBox.Show("Preventive Maintenance Toolkit" & Environment.NewLine & "Version 1.0" & Environment.NewLine & "Created by Gemini", "About", MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
+
 
 End Class

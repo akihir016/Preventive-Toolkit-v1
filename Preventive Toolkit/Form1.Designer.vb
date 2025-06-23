@@ -30,7 +30,9 @@ Partial Class Form1
         HelpToolStripMenuItem = New ToolStripMenuItem()
         AboutToolStripMenuItem = New ToolStripMenuItem()
         GrpToolBox = New GroupBox()
-        BtnDismTools = New Button()
+        Button2 = New Button()
+        Button1 = New Button()
+        BtnDismScan = New Button()
         BtnUninstallFiles = New Button()
         BtnDiskDefragmenter = New Button()
         BtnTaskManager = New Button()
@@ -43,7 +45,6 @@ Partial Class Form1
         GrpSystemInfo = New GroupBox()
         TrvSystemInfo = New TreeView()
         BtnSystemInformation = New Button()
-        Label1 = New Label()
         MenuStrip1.SuspendLayout()
         GrpToolBox.SuspendLayout()
         GrpSystemInfo.SuspendLayout()
@@ -94,7 +95,9 @@ Partial Class Form1
         ' 
         ' GrpToolBox
         ' 
-        GrpToolBox.Controls.Add(BtnDismTools)
+        GrpToolBox.Controls.Add(Button2)
+        GrpToolBox.Controls.Add(Button1)
+        GrpToolBox.Controls.Add(BtnDismScan)
         GrpToolBox.Controls.Add(BtnUninstallFiles)
         GrpToolBox.Controls.Add(BtnDiskDefragmenter)
         GrpToolBox.Controls.Add(BtnTaskManager)
@@ -106,30 +109,54 @@ Partial Class Form1
         GrpToolBox.Margin = New Padding(3, 2, 3, 2)
         GrpToolBox.Name = "GrpToolBox"
         GrpToolBox.Padding = New Padding(3, 2, 3, 2)
-        GrpToolBox.Size = New Size(332, 218)
+        GrpToolBox.Size = New Size(314, 208)
         GrpToolBox.TabIndex = 1
         GrpToolBox.TabStop = False
         GrpToolBox.Text = "ToolBox"
         ' 
-        ' BtnDismTools
+        ' Button2
         ' 
-        BtnDismTools.Font = New Font("Segoe UI", 9.0F)
-        BtnDismTools.Location = New Point(184, 68)
-        BtnDismTools.Margin = New Padding(3, 2, 3, 2)
-        BtnDismTools.Name = "BtnDismTools"
-        BtnDismTools.Size = New Size(130, 30)
-        BtnDismTools.TabIndex = 6
-        BtnDismTools.Text = " DISM and Other TOOLS"
-        BtnDismTools.TextAlign = ContentAlignment.MiddleLeft
-        BtnDismTools.UseVisualStyleBackColor = True
+        Button2.Font = New Font("Segoe UI", 9.0F)
+        Button2.Location = New Point(242, 97)
+        Button2.Margin = New Padding(3, 2, 3, 2)
+        Button2.Name = "Button2"
+        Button2.Size = New Size(51, 30)
+        Button2.TabIndex = 8
+        Button2.Text = "Repair"
+        Button2.TextAlign = ContentAlignment.MiddleLeft
+        Button2.UseVisualStyleBackColor = True
+        ' 
+        ' Button1
+        ' 
+        Button1.Font = New Font("Segoe UI", 9.0F)
+        Button1.Location = New Point(175, 97)
+        Button1.Margin = New Padding(3, 2, 3, 2)
+        Button1.Name = "Button1"
+        Button1.Size = New Size(71, 30)
+        Button1.TabIndex = 7
+        Button1.Text = "DISM Scan"
+        Button1.TextAlign = ContentAlignment.MiddleLeft
+        Button1.UseVisualStyleBackColor = True
+        ' 
+        ' BtnDismScan
+        ' 
+        BtnDismScan.Font = New Font("Segoe UI", 9.0F)
+        BtnDismScan.Location = New Point(175, 59)
+        BtnDismScan.Margin = New Padding(3, 2, 3, 2)
+        BtnDismScan.Name = "BtnDismScan"
+        BtnDismScan.Size = New Size(118, 30)
+        BtnDismScan.TabIndex = 6
+        BtnDismScan.Text = "Other Tools"
+        BtnDismScan.TextAlign = ContentAlignment.MiddleLeft
+        BtnDismScan.UseVisualStyleBackColor = True
         ' 
         ' BtnUninstallFiles
         ' 
         BtnUninstallFiles.Font = New Font("Segoe UI", 9.0F)
-        BtnUninstallFiles.Location = New Point(184, 29)
+        BtnUninstallFiles.Location = New Point(175, 20)
         BtnUninstallFiles.Margin = New Padding(3, 2, 3, 2)
         BtnUninstallFiles.Name = "BtnUninstallFiles"
-        BtnUninstallFiles.Size = New Size(130, 30)
+        BtnUninstallFiles.Size = New Size(118, 30)
         BtnUninstallFiles.TabIndex = 5
         BtnUninstallFiles.Text = "Uninstall Files"
         BtnUninstallFiles.TextAlign = ContentAlignment.MiddleLeft
@@ -138,10 +165,10 @@ Partial Class Form1
         ' BtnDiskDefragmenter
         ' 
         BtnDiskDefragmenter.Font = New Font("Segoe UI", 9.0F)
-        BtnDiskDefragmenter.Location = New Point(18, 181)
+        BtnDiskDefragmenter.Location = New Point(19, 172)
         BtnDiskDefragmenter.Margin = New Padding(3, 2, 3, 2)
         BtnDiskDefragmenter.Name = "BtnDiskDefragmenter"
-        BtnDiskDefragmenter.Size = New Size(130, 30)
+        BtnDiskDefragmenter.Size = New Size(121, 30)
         BtnDiskDefragmenter.TabIndex = 4
         BtnDiskDefragmenter.Text = " Disk Defragmenter"
         BtnDiskDefragmenter.TextAlign = ContentAlignment.MiddleLeft
@@ -150,10 +177,10 @@ Partial Class Form1
         ' BtnTaskManager
         ' 
         BtnTaskManager.Font = New Font("Segoe UI", 9.0F)
-        BtnTaskManager.Location = New Point(18, 143)
+        BtnTaskManager.Location = New Point(19, 134)
         BtnTaskManager.Margin = New Padding(3, 2, 3, 2)
         BtnTaskManager.Name = "BtnTaskManager"
-        BtnTaskManager.Size = New Size(130, 30)
+        BtnTaskManager.Size = New Size(121, 30)
         BtnTaskManager.TabIndex = 3
         BtnTaskManager.Text = "Task Manager"
         BtnTaskManager.TextAlign = ContentAlignment.MiddleLeft
@@ -162,10 +189,10 @@ Partial Class Form1
         ' BtnWindowsUpdate
         ' 
         BtnWindowsUpdate.Font = New Font("Segoe UI", 9.0F)
-        BtnWindowsUpdate.Location = New Point(18, 106)
+        BtnWindowsUpdate.Location = New Point(19, 97)
         BtnWindowsUpdate.Margin = New Padding(3, 2, 3, 2)
         BtnWindowsUpdate.Name = "BtnWindowsUpdate"
-        BtnWindowsUpdate.Size = New Size(130, 30)
+        BtnWindowsUpdate.Size = New Size(121, 30)
         BtnWindowsUpdate.TabIndex = 2
         BtnWindowsUpdate.Text = " Windows Update"
         BtnWindowsUpdate.TextAlign = ContentAlignment.MiddleLeft
@@ -174,10 +201,10 @@ Partial Class Form1
         ' BtnWindowsSecurity
         ' 
         BtnWindowsSecurity.Font = New Font("Segoe UI", 9.0F)
-        BtnWindowsSecurity.Location = New Point(18, 68)
+        BtnWindowsSecurity.Location = New Point(19, 59)
         BtnWindowsSecurity.Margin = New Padding(3, 2, 3, 2)
         BtnWindowsSecurity.Name = "BtnWindowsSecurity"
-        BtnWindowsSecurity.Size = New Size(130, 30)
+        BtnWindowsSecurity.Size = New Size(121, 30)
         BtnWindowsSecurity.TabIndex = 1
         BtnWindowsSecurity.Text = "Windows Security"
         BtnWindowsSecurity.TextAlign = ContentAlignment.MiddleLeft
@@ -186,10 +213,10 @@ Partial Class Form1
         ' BtnSystemRestore
         ' 
         BtnSystemRestore.Font = New Font("Segoe UI", 9.0F)
-        BtnSystemRestore.Location = New Point(18, 29)
+        BtnSystemRestore.Location = New Point(19, 20)
         BtnSystemRestore.Margin = New Padding(3, 2, 3, 2)
         BtnSystemRestore.Name = "BtnSystemRestore"
-        BtnSystemRestore.Size = New Size(130, 30)
+        BtnSystemRestore.Size = New Size(121, 30)
         BtnSystemRestore.TabIndex = 0
         BtnSystemRestore.Text = " System Restore"
         BtnSystemRestore.TextAlign = ContentAlignment.MiddleLeft
@@ -197,17 +224,17 @@ Partial Class Form1
         ' 
         ' RtbPingOutput
         ' 
-        RtbPingOutput.Location = New Point(368, 34)
+        RtbPingOutput.Location = New Point(339, 73)
         RtbPingOutput.Margin = New Padding(3, 2, 3, 2)
         RtbPingOutput.Name = "RtbPingOutput"
         RtbPingOutput.ReadOnly = True
-        RtbPingOutput.Size = New Size(341, 166)
+        RtbPingOutput.Size = New Size(369, 140)
         RtbPingOutput.TabIndex = 2
         RtbPingOutput.Text = ""
         ' 
         ' TxtPingTarget
         ' 
-        TxtPingTarget.Location = New Point(442, 232)
+        TxtPingTarget.Location = New Point(415, 219)
         TxtPingTarget.Margin = New Padding(3, 2, 3, 2)
         TxtPingTarget.Name = "TxtPingTarget"
         TxtPingTarget.Size = New Size(175, 23)
@@ -216,7 +243,7 @@ Partial Class Form1
         ' 
         ' BtnPing
         ' 
-        BtnPing.Location = New Point(366, 230)
+        BtnPing.Location = New Point(339, 217)
         BtnPing.Margin = New Padding(3, 2, 3, 2)
         BtnPing.Name = "BtnPing"
         BtnPing.Size = New Size(70, 25)
@@ -228,18 +255,18 @@ Partial Class Form1
         ' 
         GrpSystemInfo.Controls.Add(TrvSystemInfo)
         GrpSystemInfo.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
-        GrpSystemInfo.Location = New Point(10, 259)
+        GrpSystemInfo.Location = New Point(10, 246)
         GrpSystemInfo.Margin = New Padding(3, 2, 3, 2)
         GrpSystemInfo.Name = "GrpSystemInfo"
         GrpSystemInfo.Padding = New Padding(3, 2, 3, 2)
-        GrpSystemInfo.Size = New Size(699, 313)
+        GrpSystemInfo.Size = New Size(699, 311)
         GrpSystemInfo.TabIndex = 5
         GrpSystemInfo.TabStop = False
         GrpSystemInfo.Text = "System Info Scan"
         ' 
         ' TrvSystemInfo
         ' 
-        TrvSystemInfo.Location = New Point(9, 20)
+        TrvSystemInfo.Location = New Point(6, 20)
         TrvSystemInfo.Margin = New Padding(3, 2, 3, 2)
         TrvSystemInfo.Name = "TrvSystemInfo"
         TrvSystemInfo.Size = New Size(674, 281)
@@ -247,22 +274,13 @@ Partial Class Form1
         ' 
         ' BtnSystemInformation
         ' 
-        BtnSystemInformation.Location = New Point(19, 576)
+        BtnSystemInformation.Location = New Point(10, 561)
         BtnSystemInformation.Margin = New Padding(3, 2, 3, 2)
         BtnSystemInformation.Name = "BtnSystemInformation"
-        BtnSystemInformation.Size = New Size(131, 22)
+        BtnSystemInformation.Size = New Size(44, 32)
         BtnSystemInformation.TabIndex = 6
-        BtnSystemInformation.Text = "System Information"
+        BtnSystemInformation.Text = "Scan"
         BtnSystemInformation.UseVisualStyleBackColor = True
-        ' 
-        ' Label1
-        ' 
-        Label1.AutoSize = True
-        Label1.Location = New Point(368, 209)
-        Label1.Name = "Label1"
-        Label1.Size = New Size(35, 15)
-        Label1.TabIndex = 7
-        Label1.Text = "Host:"
         ' 
         ' Form1
         ' 
@@ -270,7 +288,6 @@ Partial Class Form1
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
         ClientSize = New Size(720, 604)
-        Controls.Add(Label1)
         Controls.Add(BtnSystemInformation)
         Controls.Add(GrpSystemInfo)
         Controls.Add(BtnPing)
@@ -304,7 +321,7 @@ Partial Class Form1
     Friend WithEvents BtnDiskDefragmenter As Button
     Friend WithEvents BtnTaskManager As Button
     Friend WithEvents BtnWindowsUpdate As Button
-    Friend WithEvents BtnDismTools As Button
+    Friend WithEvents BtnDismScan As Button
     Friend WithEvents BtnUninstallFiles As Button
     Friend WithEvents RtbPingOutput As RichTextBox
     Friend WithEvents TxtPingTarget As TextBox
@@ -312,5 +329,6 @@ Partial Class Form1
     Friend WithEvents GrpSystemInfo As GroupBox
     Friend WithEvents TrvSystemInfo As TreeView
     Friend WithEvents BtnSystemInformation As Button
-    Friend WithEvents Label1 As Label
+    Friend WithEvents Button1 As Button
+    Friend WithEvents Button2 As Button
 End Class
