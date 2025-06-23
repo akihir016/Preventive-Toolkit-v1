@@ -180,15 +180,33 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub BtnDismTools_Click(sender As Object, e As EventArgs) Handles BtnDismTools.Click
-        ' This is a placeholder as DISM usually runs from an elevated command prompt.
-        ' For a full implementation, you might need to run a batch script or a PowerShell script
-        ' with administrative privileges. For simplicity, we'll just open cmd.exe here.
+    Private Sub BtnDismScanHealth_Click(sender As Object, e As EventArgs) Handles BtnDismScanHealth.Click
         Try
-            Process.Start("cmd.exe")
-            MessageBox.Show("For DISM and other command-line tools, please run as administrator and type commands manually.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "cmd.exe"
+            psi.Arguments = "/k DISM /Online /Cleanup-Image /ScanHealth" ' /k keeps window open
+            psi.Verb = "runas" ' Request administrator privileges
+            Process.Start(psi)
+        Catch ex As System.ComponentModel.Win32Exception
+            ' Handle case where user cancels UAC prompt or other admin rights issues
+            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Catch ex As Exception
-            MessageBox.Show("Error launching Command Prompt: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Error launching DISM ScanHealth: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub BtnDismRestoreHealth_Click(sender As Object, e As EventArgs) Handles BtnDismRestoreHealth.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "cmd.exe"
+            psi.Arguments = "/k DISM /Online /Cleanup-Image /RestoreHealth" ' /k keeps window open
+            psi.Verb = "runas" ' Request administrator privileges
+            Process.Start(psi)
+        Catch ex As System.ComponentModel.Win32Exception
+            ' Handle case where user cancels UAC prompt or other admin rights issues
+            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            MessageBox.Show("Error launching DISM RestoreHealth: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -260,18 +278,18 @@ Public Class Form1
     ' --- System Information Functionality ---
 
     Private Sub BtnSystemInformation_Click(sender As Object, e As EventArgs) Handles BtnSystemInformation.Click
-        TrvSystemInfo.Nodes.Clear() ' Clear previous information
+        Dim systemData As List(Of KeyValuePair(Of String, String)) = GetSystemInformationData()
+        PopulateTreeView(systemData)
+    End Sub
 
-        Dim rootNode As New TreeNode("System Information")
-        TrvSystemInfo.Nodes.Add(rootNode)
+    Private Function GetSystemInformationData() As List(Of KeyValuePair(Of String, String))
+        Dim data As New List(Of KeyValuePair(Of String, String))
 
         ' Operating System Info
         Try
             Dim osSearcher As New ManagementObjectSearcher("SELECT Caption, InstallDate, OSArchitecture FROM Win32_OperatingSystem")
             For Each os As ManagementObject In osSearcher.Get()
-                Dim osNode As New TreeNode("Operating System")
-                osNode.Nodes.Add("Name: " & os("Caption").ToString())
-                ' Format InstallDate to a readable format
+                data.Add(New KeyValuePair(Of String, String)("OS_Name", os("Caption").ToString()))
                 Dim installDateWMI As String = os("InstallDate").ToString()
                 Dim installDateFormatted As String = ""
                 If installDateWMI.Length >= 14 Then
@@ -279,97 +297,212 @@ Public Class Form1
                 Else
                     installDateFormatted = installDateWMI
                 End If
-                osNode.Nodes.Add("Install Date: " & installDateFormatted)
-                osNode.Nodes.Add("Architecture: " & os("OSArchitecture").ToString())
-                rootNode.Nodes.Add(osNode)
+                data.Add(New KeyValuePair(Of String, String)("OS_InstallDate", installDateFormatted))
+                data.Add(New KeyValuePair(Of String, String)("OS_Architecture", os("OSArchitecture").ToString()))
                 Exit For ' Only need one OS entry
             Next
         Catch ex As Exception
-            rootNode.Nodes.Add("Operating System: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("OS_Error", "Error retrieving information - " & ex.Message))
         End Try
-
 
         ' CPU Info
         Try
             Dim cpuSearcher As New ManagementObjectSearcher("SELECT Name FROM Win32_Processor")
             For Each cpu As ManagementObject In cpuSearcher.Get()
-                Dim cpuNode As New TreeNode("CPU")
-                cpuNode.Nodes.Add("Name: " & cpu("Name").ToString())
-                rootNode.Nodes.Add(cpuNode)
+                data.Add(New KeyValuePair(Of String, String)("CPU_Name", cpu("Name").ToString()))
                 Exit For ' Usually just one primary CPU entry needed
             Next
         Catch ex As Exception
-            rootNode.Nodes.Add("CPU: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("CPU_Error", "Error retrieving information - " & ex.Message))
         End Try
 
-        ' RAM Info (Installed Physical Memory)
+        ' RAM Info
         Try
             Dim ramSearcher As New ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem")
             For Each ram As ManagementObject In ramSearcher.Get()
                 Dim totalRAMBytes As ULong = CULng(ram("TotalPhysicalMemory"))
-                Dim totalRAMGB As Double = Math.Round(CDbl(totalRAMBytes / (1024 * 1024 * 1024)), 2) ' Convert bytes to GB
-                Dim ramNode As New TreeNode("RAM")
-                ramNode.Nodes.Add($"Installed RAM: {totalRAMGB} GB")
-                rootNode.Nodes.Add(ramNode)
+                Dim totalRAMGB As Double = Math.Round(CDbl(totalRAMBytes / (1024 * 1024 * 1024)), 2)
+                data.Add(New KeyValuePair(Of String, String)("RAM_Installed", $"{totalRAMGB} GB"))
                 Exit For
             Next
         Catch ex As Exception
-            rootNode.Nodes.Add("RAM: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("RAM_Error", "Error retrieving information - " & ex.Message))
         End Try
 
-        ' GPU Info (Video Controller)
+        ' GPU Info
         Try
             Dim gpuSearcher As New ManagementObjectSearcher("SELECT Name, AdapterRAM FROM Win32_VideoController")
+            Dim gpuIndex As Integer = 0
             For Each gpu As ManagementObject In gpuSearcher.Get()
-                Dim gpuNode As New TreeNode("GPU")
+                gpuIndex += 1
                 Dim adapterRAM As Object = gpu("AdapterRAM")
                 Dim ramSize As String = If(adapterRAM IsNot Nothing, $" ({Math.Round(CDbl(CULng(adapterRAM) / (1024 * 1024)), 0)} MB)", "")
-                gpuNode.Nodes.Add($"Name: {gpu("Name").ToString()}{ramSize}")
-                rootNode.Nodes.Add(gpuNode)
+                data.Add(New KeyValuePair(Of String, String)($"GPU{gpuIndex}_Name", $"{gpu("Name").ToString()}{ramSize}"))
             Next
         Catch ex As Exception
-            rootNode.Nodes.Add("GPU: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("GPU_Error", "Error retrieving information - " & ex.Message))
         End Try
 
         ' Computer Name
         Try
-            Dim compNameNode As New TreeNode("Computer Name")
-            compNameNode.Nodes.Add("Name: " & Environment.MachineName)
-            rootNode.Nodes.Add(compNameNode)
+            data.Add(New KeyValuePair(Of String, String)("ComputerName", Environment.MachineName))
         Catch ex As Exception
-            rootNode.Nodes.Add("Computer Name: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("ComputerName_Error", "Error retrieving information - " & ex.Message))
         End Try
 
-
-        ' Storage Info (Logical Disks - C: D: etc. and Physical Disks)
+        ' Storage Info
         Try
-            Dim storageNode As New TreeNode("Storage")
             ' Logical Disks
-            Dim logicalDiskSearcher As New ManagementObjectSearcher("SELECT Caption, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3") ' DriveType 3 for Local Disk
+            Dim logicalDiskSearcher As New ManagementObjectSearcher("SELECT Caption, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3")
+            Dim logicalDiskIndex As Integer = 0
             For Each logicalDisk As ManagementObject In logicalDiskSearcher.Get()
+                logicalDiskIndex += 1
                 Dim caption As String = logicalDisk("Caption").ToString()
                 Dim totalSize As ULong = CULng(logicalDisk("Size"))
                 Dim freeSpace As ULong = CULng(logicalDisk("FreeSpace"))
                 Dim totalGB As Double = Math.Round(CDbl(totalSize / (1024 * 1024 * 1024)), 2)
                 Dim freeGB As Double = Math.Round(CDbl(freeSpace / (1024 * 1024 * 1024)), 2)
-                storageNode.Nodes.Add($"Logical Disk: {caption} - {totalGB} GB ({freeGB} GB free)")
+                data.Add(New KeyValuePair(Of String, String)($"LogicalDisk{logicalDiskIndex}_Drive", caption))
+                data.Add(New KeyValuePair(Of String, String)($"LogicalDisk{logicalDiskIndex}_TotalSpace", $"{totalGB} GB"))
+                data.Add(New KeyValuePair(Of String, String)($"LogicalDisk{logicalDiskIndex}_FreeSpace", $"{freeGB} GB"))
             Next
 
             ' Physical Disks
             Dim physicalDiskSearcher As New ManagementObjectSearcher("SELECT Caption, Size FROM Win32_DiskDrive")
+            Dim physicalDiskIndex As Integer = 0
             For Each physicalDisk As ManagementObject In physicalDiskSearcher.Get()
+                physicalDiskIndex += 1
                 Dim caption As String = physicalDisk("Caption").ToString()
                 Dim size As ULong = CULng(physicalDisk("Size"))
                 Dim sizeGB As Double = Math.Round(CDbl(size / (1024 * 1024 * 1024)), 2)
-                storageNode.Nodes.Add($"Physical Disk: {caption} ({sizeGB} GB)")
+                data.Add(New KeyValuePair(Of String, String)($"PhysicalDisk{physicalDiskIndex}_Model", caption))
+                data.Add(New KeyValuePair(Of String, String)($"PhysicalDisk{physicalDiskIndex}_Size", $"{sizeGB} GB"))
             Next
-            rootNode.Nodes.Add(storageNode)
         Catch ex As Exception
-            rootNode.Nodes.Add("Storage: Error retrieving information - " & ex.Message)
+            data.Add(New KeyValuePair(Of String, String)("Storage_Error", "Error retrieving information - " & ex.Message))
         End Try
 
-        rootNode.ExpandAll() ' Expand all nodes for better visibility
+        Return data
+    End Function
+
+    Private Sub PopulateTreeView(systemData As List(Of KeyValuePair(Of String, String)))
+        TrvSystemInfo.Nodes.Clear()
+        Dim rootNode As New TreeNode("System Information")
+        TrvSystemInfo.Nodes.Add(rootNode)
+
+        Dim currentCategoryNode As TreeNode = Nothing
+        Dim lastCategoryPrefix As String = ""
+
+        For Each item In systemData
+            Dim parts() As String = item.Key.Split("_"c)
+            Dim categoryPrefix As String = parts(0)
+            Dim displayName As String = String.Join(" ", parts.Skip(1)) ' Basic display name from key parts
+
+            If categoryPrefix <> lastCategoryPrefix OrElse currentCategoryNode Is Nothing Then
+                ' Attempt to create a more user-friendly category name
+                Dim categoryName As String = categoryPrefix
+                If categoryPrefix.EndsWith("Error") Then
+                    categoryName = categoryPrefix.Replace("Error", " Information (Error)")
+                ElseIf categoryPrefix.Contains("GPU") AndAlso Char.IsDigit(categoryPrefix.Last()) Then
+                    categoryName = "GPU"
+                ElseIf categoryPrefix.Contains("Disk") AndAlso Char.IsDigit(categoryPrefix.Last()) Then
+                    categoryName = If(categoryPrefix.StartsWith("Logical"), "Logical Disk", "Physical Disk")
+                End If
+
+                currentCategoryNode = New TreeNode(categoryName)
+                rootNode.Nodes.Add(currentCategoryNode)
+                lastCategoryPrefix = categoryPrefix
+            End If
+
+            ' Refine display name and value for tree view
+            Dim nodeText As String = $"{displayName}: {item.Value}"
+            If item.Key.Contains("Error") Then
+                nodeText = $"{displayName}: {item.Value}" ' DisplayName already includes "Error"
+            ElseIf item.Key.Contains("Name") AndAlso Not item.Key.StartsWith("ComputerName") Then
+                nodeText = $"Name: {item.Value}"
+            ElseIf item.Key.Contains("Drive") Then
+                nodeText = $"Drive: {item.Value}"
+            ElseIf item.Key.Contains("TotalSpace") Then
+                nodeText = $"Total Space: {item.Value}"
+            ElseIf item.Key.Contains("FreeSpace") Then
+                nodeText = $"Free Space: {item.Value}"
+            ElseIf item.Key.Contains("Model") Then
+                nodeText = $"Model: {item.Value}"
+            ElseIf item.Key.Contains("Size") AndAlso item.Key.StartsWith("PhysicalDisk") Then
+                nodeText = $"Size: {item.Value}"
+            End If
+
+
+            currentCategoryNode.Nodes.Add(nodeText)
+        Next
+
+        rootNode.ExpandAll()
     End Sub
+
+
+    Private Sub BtnExportSysInfoXML_Click(sender As Object, e As EventArgs) Handles BtnExportSysInfoXML.Click
+        Dim systemData As List(Of KeyValuePair(Of String, String)) = GetSystemInformationData()
+        If systemData Is Nothing OrElse systemData.Count = 0 Then
+            MessageBox.Show("No system information to export.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        Using sfd As New SaveFileDialog()
+            sfd.Filter = "XML Files (*.xml)|*.xml"
+            sfd.Title = "Save System Information as XML"
+            sfd.FileName = "SystemInfo_" & DateTime.Now.ToString("yyyyMMdd_HHmmss") & ".xml"
+
+            If sfd.ShowDialog() = DialogResult.OK Then
+                Try
+                    Dim xmlDoc As New System.Xml.XmlDocument()
+                    Dim rootElement As System.Xml.XmlElement = xmlDoc.CreateElement("SystemInformation")
+                    xmlDoc.AppendChild(rootElement)
+
+                    For Each item In systemData
+                        Dim element As System.Xml.XmlElement = xmlDoc.CreateElement(item.Key.Replace(" ", "_").Replace(":", "").Replace("/", "_")) ' Sanitize key for XML element name
+                        element.InnerText = item.Value
+                        rootElement.AppendChild(element)
+                    Next
+
+                    xmlDoc.Save(sfd.FileName)
+                    MessageBox.Show("System information exported to XML successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Catch ex As Exception
+                    MessageBox.Show("Error exporting to XML: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End Try
+            End If
+        End Using
+    End Sub
+
+    Private Sub BtnExportSysInfoTXT_Click(sender As Object, e As EventArgs) Handles BtnExportSysInfoTXT.Click
+        Dim systemData As List(Of KeyValuePair(Of String, String)) = GetSystemInformationData()
+        If systemData Is Nothing OrElse systemData.Count = 0 Then
+            MessageBox.Show("No system information to export.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        Using sfd As New SaveFileDialog()
+            sfd.Filter = "Text Files (*.txt)|*.txt"
+            sfd.Title = "Save System Information as Text"
+            sfd.FileName = "SystemInfo_" & DateTime.Now.ToString("yyyyMMdd_HHmmss") & ".txt"
+
+            If sfd.ShowDialog() = DialogResult.OK Then
+                Try
+                    Using writer As New System.IO.StreamWriter(sfd.FileName)
+                        writer.WriteLine("--- System Information ---")
+                        writer.WriteLine("Generated on: " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                        writer.WriteLine("--------------------------")
+                        For Each item In systemData
+                            writer.WriteLine($"{item.Key.Replace("_", " ")}: {item.Value}") ' Make key more readable
+                        Next
+                    End Using
+                    MessageBox.Show("System information exported to TXT successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Catch ex As Exception
+                    MessageBox.Show("Error exporting to TXT: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End Try
+            End If
+        End Using
+    End Sub
+
 
     ' --- Menu Strip Items ---
     Private Sub FileToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FileToolStripMenuItem.Click

@@ -30,7 +30,8 @@ Partial Class Form1
         HelpToolStripMenuItem = New ToolStripMenuItem()
         AboutToolStripMenuItem = New ToolStripMenuItem()
         GrpToolBox = New GroupBox()
-        BtnDismTools = New Button()
+        BtnDismScanHealth = New Button()
+        BtnDismRestoreHealth = New Button()
         BtnUninstallFiles = New Button()
         BtnDiskDefragmenter = New Button()
         BtnTaskManager = New Button()
@@ -43,6 +44,8 @@ Partial Class Form1
         GrpSystemInfo = New GroupBox()
         TrvSystemInfo = New TreeView()
         BtnSystemInformation = New Button()
+        BtnExportSysInfoXML = New Button()
+        BtnExportSysInfoTXT = New Button()
         Label1 = New Label()
         MenuStrip1.SuspendLayout()
         GrpToolBox.SuspendLayout()
@@ -94,7 +97,8 @@ Partial Class Form1
         ' 
         ' GrpToolBox
         ' 
-        GrpToolBox.Controls.Add(BtnDismTools)
+        GrpToolBox.Controls.Add(BtnDismRestoreHealth)
+        GrpToolBox.Controls.Add(BtnDismScanHealth)
         GrpToolBox.Controls.Add(BtnUninstallFiles)
         GrpToolBox.Controls.Add(BtnDiskDefragmenter)
         GrpToolBox.Controls.Add(BtnTaskManager)
@@ -111,17 +115,29 @@ Partial Class Form1
         GrpToolBox.TabStop = False
         GrpToolBox.Text = "ToolBox"
         ' 
-        ' BtnDismTools
-        ' 
-        BtnDismTools.Font = New Font("Segoe UI", 9.0F)
-        BtnDismTools.Location = New Point(184, 68)
-        BtnDismTools.Margin = New Padding(3, 2, 3, 2)
-        BtnDismTools.Name = "BtnDismTools"
-        BtnDismTools.Size = New Size(130, 30)
-        BtnDismTools.TabIndex = 6
-        BtnDismTools.Text = " DISM and Other TOOLS"
-        BtnDismTools.TextAlign = ContentAlignment.MiddleLeft
-        BtnDismTools.UseVisualStyleBackColor = True
+        ' BtnDismScanHealth
+        '
+        BtnDismScanHealth.Font = New Font("Segoe UI", 9.0F)
+        BtnDismScanHealth.Location = New Point(184, 68)
+        BtnDismScanHealth.Margin = New Padding(3, 2, 3, 2)
+        BtnDismScanHealth.Name = "BtnDismScanHealth"
+        BtnDismScanHealth.Size = New Size(130, 30)
+        BtnDismScanHealth.TabIndex = 6
+        BtnDismScanHealth.Text = "DISM Scan Health"
+        BtnDismScanHealth.TextAlign = ContentAlignment.MiddleLeft
+        BtnDismScanHealth.UseVisualStyleBackColor = True
+        '
+        ' BtnDismRestoreHealth
+        '
+        BtnDismRestoreHealth.Font = New Font("Segoe UI", 9.0F)
+        BtnDismRestoreHealth.Location = New Point(184, 106)
+        BtnDismRestoreHealth.Margin = New Padding(3, 2, 3, 2)
+        BtnDismRestoreHealth.Name = "BtnDismRestoreHealth"
+        BtnDismRestoreHealth.Size = New Size(130, 30)
+        BtnDismRestoreHealth.TabIndex = 7
+        BtnDismRestoreHealth.Text = "DISM Restore Health"
+        BtnDismRestoreHealth.TextAlign = ContentAlignment.MiddleLeft
+        BtnDismRestoreHealth.UseVisualStyleBackColor = True
         ' 
         ' BtnUninstallFiles
         ' 
@@ -255,6 +271,26 @@ Partial Class Form1
         BtnSystemInformation.Text = "System Information"
         BtnSystemInformation.UseVisualStyleBackColor = True
         ' 
+        ' BtnExportSysInfoXML
+        '
+        BtnExportSysInfoXML.Location = New Point(156, 576)
+        BtnExportSysInfoXML.Margin = New Padding(3, 2, 3, 2)
+        BtnExportSysInfoXML.Name = "BtnExportSysInfoXML"
+        BtnExportSysInfoXML.Size = New Size(131, 22)
+        BtnExportSysInfoXML.TabIndex = 8
+        BtnExportSysInfoXML.Text = "Export to XML"
+        BtnExportSysInfoXML.UseVisualStyleBackColor = True
+        '
+        ' BtnExportSysInfoTXT
+        '
+        BtnExportSysInfoTXT.Location = New Point(293, 576)
+        BtnExportSysInfoTXT.Margin = New Padding(3, 2, 3, 2)
+        BtnExportSysInfoTXT.Name = "BtnExportSysInfoTXT"
+        BtnExportSysInfoTXT.Size = New Size(131, 22)
+        BtnExportSysInfoTXT.TabIndex = 9
+        BtnExportSysInfoTXT.Text = "Export to TXT"
+        BtnExportSysInfoTXT.UseVisualStyleBackColor = True
+        '
         ' Label1
         ' 
         Label1.AutoSize = True
@@ -270,6 +306,8 @@ Partial Class Form1
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
         ClientSize = New Size(720, 604)
+        Controls.Add(BtnExportSysInfoTXT)
+        Controls.Add(BtnExportSysInfoXML)
         Controls.Add(Label1)
         Controls.Add(BtnSystemInformation)
         Controls.Add(GrpSystemInfo)
@@ -304,7 +342,8 @@ Partial Class Form1
     Friend WithEvents BtnDiskDefragmenter As Button
     Friend WithEvents BtnTaskManager As Button
     Friend WithEvents BtnWindowsUpdate As Button
-    Friend WithEvents BtnDismTools As Button
+    Friend WithEvents BtnDismScanHealth As Button
+    Friend WithEvents BtnDismRestoreHealth As Button
     Friend WithEvents BtnUninstallFiles As Button
     Friend WithEvents RtbPingOutput As RichTextBox
     Friend WithEvents TxtPingTarget As TextBox
@@ -312,5 +351,7 @@ Partial Class Form1
     Friend WithEvents GrpSystemInfo As GroupBox
     Friend WithEvents TrvSystemInfo As TreeView
     Friend WithEvents BtnSystemInformation As Button
+    Friend WithEvents BtnExportSysInfoXML As Button
+    Friend WithEvents BtnExportSysInfoTXT As Button
     Friend WithEvents Label1 As Label
 End Class
