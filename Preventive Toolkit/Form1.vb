@@ -187,6 +187,24 @@ Public Class Form1
         End Try
     End Sub
 
+    '--- Hard Disk SMART Test Functionality ---
+    Private Sub BtnSmartTest_Click(sender As Object, e As EventArgs) Handles BtnSmartTest.Click
+        Try
+            Dim psi As New ProcessStartInfo
+            psi.FileName = "cmd.exe"
+            psi.Arguments = "cmd /c wmic diskdrive get Caption, DeviceID, Model, Size, Status & pause"
+            psi.Verb = "runas" ' Request administrator privileges
+            psi.UseShellExecute = True ' Required for Verb="runas"
+
+            Process.Start(psi)
+        Catch ex As ComponentModel.Win32Exception
+            ' Handle case where user cancels UAC prompt or other admin rights issues
+            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Catch ex As Exception
+            MessageBox.Show("Error HDD Smart Test: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+    '--- DISM Commands Functionality ---
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Try
             Dim psi As New ProcessStartInfo
@@ -204,7 +222,7 @@ Public Class Form1
         End Try
 
     End Sub
-
+    '--- DISM RestoreHealth Functionality ---
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         Try
             Dim psi As New ProcessStartInfo
@@ -659,4 +677,10 @@ Public Class Form1
     Private Sub UpdateDate()
         Label1.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy") ' Update the date label
     End Sub
+
+    Private Sub BtnTools_Click(sender As Object, e As EventArgs) Handles BtnTools.Click
+        Form2.Show() ' Show the second form for Other tools
+    End Sub
+
+
 End Class

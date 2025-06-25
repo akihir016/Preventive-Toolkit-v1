@@ -30,9 +30,10 @@ Partial Class Form1
         HelpToolStripMenuItem = New ToolStripMenuItem()
         AboutToolStripMenuItem = New ToolStripMenuItem()
         GrpToolBox = New GroupBox()
+        BtnSmartTest = New Button()
         Button2 = New Button()
         Button1 = New Button()
-        BtnDismScan = New Button()
+        BtnTools = New Button()
         BtnUninstallFiles = New Button()
         BtnDiskDefragmenter = New Button()
         BtnTaskManager = New Button()
@@ -98,16 +99,17 @@ Partial Class Form1
         ' 
         ' GrpToolBox
         ' 
+        GrpToolBox.Controls.Add(BtnSmartTest)
         GrpToolBox.Controls.Add(Button2)
         GrpToolBox.Controls.Add(Button1)
-        GrpToolBox.Controls.Add(BtnDismScan)
+        GrpToolBox.Controls.Add(BtnTools)
         GrpToolBox.Controls.Add(BtnUninstallFiles)
         GrpToolBox.Controls.Add(BtnDiskDefragmenter)
         GrpToolBox.Controls.Add(BtnTaskManager)
         GrpToolBox.Controls.Add(BtnWindowsUpdate)
         GrpToolBox.Controls.Add(BtnWindowsSecurity)
         GrpToolBox.Controls.Add(BtnSystemRestore)
-        GrpToolBox.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        GrpToolBox.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         GrpToolBox.Location = New Point(10, 34)
         GrpToolBox.Margin = New Padding(3, 2, 3, 2)
         GrpToolBox.Name = "GrpToolBox"
@@ -117,9 +119,21 @@ Partial Class Form1
         GrpToolBox.TabStop = False
         GrpToolBox.Text = "ToolBox"
         ' 
+        ' BtnSmartTest
+        ' 
+        BtnSmartTest.Font = New Font("Segoe UI", 9F)
+        BtnSmartTest.Location = New Point(175, 134)
+        BtnSmartTest.Margin = New Padding(3, 2, 3, 2)
+        BtnSmartTest.Name = "BtnSmartTest"
+        BtnSmartTest.Size = New Size(118, 30)
+        BtnSmartTest.TabIndex = 9
+        BtnSmartTest.Text = "Hard Disk Smart Test"
+        BtnSmartTest.TextAlign = ContentAlignment.MiddleLeft
+        BtnSmartTest.UseVisualStyleBackColor = True
+        ' 
         ' Button2
         ' 
-        Button2.Font = New Font("Segoe UI", 9.0F)
+        Button2.Font = New Font("Segoe UI", 9F)
         Button2.Location = New Point(242, 97)
         Button2.Margin = New Padding(3, 2, 3, 2)
         Button2.Name = "Button2"
@@ -131,7 +145,7 @@ Partial Class Form1
         ' 
         ' Button1
         ' 
-        Button1.Font = New Font("Segoe UI", 9.0F)
+        Button1.Font = New Font("Segoe UI", 9F)
         Button1.Location = New Point(175, 97)
         Button1.Margin = New Padding(3, 2, 3, 2)
         Button1.Name = "Button1"
@@ -141,21 +155,21 @@ Partial Class Form1
         Button1.TextAlign = ContentAlignment.MiddleLeft
         Button1.UseVisualStyleBackColor = True
         ' 
-        ' BtnDismScan
+        ' BtnTools
         ' 
-        BtnDismScan.Font = New Font("Segoe UI", 9.0F)
-        BtnDismScan.Location = New Point(175, 59)
-        BtnDismScan.Margin = New Padding(3, 2, 3, 2)
-        BtnDismScan.Name = "BtnDismScan"
-        BtnDismScan.Size = New Size(118, 30)
-        BtnDismScan.TabIndex = 6
-        BtnDismScan.Text = "Other Tools"
-        BtnDismScan.TextAlign = ContentAlignment.MiddleLeft
-        BtnDismScan.UseVisualStyleBackColor = True
+        BtnTools.Font = New Font("Segoe UI", 9F)
+        BtnTools.Location = New Point(175, 59)
+        BtnTools.Margin = New Padding(3, 2, 3, 2)
+        BtnTools.Name = "BtnTools"
+        BtnTools.Size = New Size(118, 30)
+        BtnTools.TabIndex = 6
+        BtnTools.Text = "Other Tools"
+        BtnTools.TextAlign = ContentAlignment.MiddleLeft
+        BtnTools.UseVisualStyleBackColor = True
         ' 
         ' BtnUninstallFiles
         ' 
-        BtnUninstallFiles.Font = New Font("Segoe UI", 9.0F)
+        BtnUninstallFiles.Font = New Font("Segoe UI", 9F)
         BtnUninstallFiles.Location = New Point(175, 20)
         BtnUninstallFiles.Margin = New Padding(3, 2, 3, 2)
         BtnUninstallFiles.Name = "BtnUninstallFiles"
@@ -167,7 +181,7 @@ Partial Class Form1
         ' 
         ' BtnDiskDefragmenter
         ' 
-        BtnDiskDefragmenter.Font = New Font("Segoe UI", 9.0F)
+        BtnDiskDefragmenter.Font = New Font("Segoe UI", 9F)
         BtnDiskDefragmenter.Location = New Point(19, 172)
         BtnDiskDefragmenter.Margin = New Padding(3, 2, 3, 2)
         BtnDiskDefragmenter.Name = "BtnDiskDefragmenter"
@@ -179,7 +193,7 @@ Partial Class Form1
         ' 
         ' BtnTaskManager
         ' 
-        BtnTaskManager.Font = New Font("Segoe UI", 9.0F)
+        BtnTaskManager.Font = New Font("Segoe UI", 9F)
         BtnTaskManager.Location = New Point(19, 134)
         BtnTaskManager.Margin = New Padding(3, 2, 3, 2)
         BtnTaskManager.Name = "BtnTaskManager"
@@ -191,7 +205,7 @@ Partial Class Form1
         ' 
         ' BtnWindowsUpdate
         ' 
-        BtnWindowsUpdate.Font = New Font("Segoe UI", 9.0F)
+        BtnWindowsUpdate.Font = New Font("Segoe UI", 9F)
         BtnWindowsUpdate.Location = New Point(19, 97)
         BtnWindowsUpdate.Margin = New Padding(3, 2, 3, 2)
         BtnWindowsUpdate.Name = "BtnWindowsUpdate"
@@ -203,7 +217,7 @@ Partial Class Form1
         ' 
         ' BtnWindowsSecurity
         ' 
-        BtnWindowsSecurity.Font = New Font("Segoe UI", 9.0F)
+        BtnWindowsSecurity.Font = New Font("Segoe UI", 9F)
         BtnWindowsSecurity.Location = New Point(19, 59)
         BtnWindowsSecurity.Margin = New Padding(3, 2, 3, 2)
         BtnWindowsSecurity.Name = "BtnWindowsSecurity"
@@ -215,7 +229,7 @@ Partial Class Form1
         ' 
         ' BtnSystemRestore
         ' 
-        BtnSystemRestore.Font = New Font("Segoe UI", 9.0F)
+        BtnSystemRestore.Font = New Font("Segoe UI", 9F)
         BtnSystemRestore.Location = New Point(19, 20)
         BtnSystemRestore.Margin = New Padding(3, 2, 3, 2)
         BtnSystemRestore.Name = "BtnSystemRestore"
@@ -257,7 +271,7 @@ Partial Class Form1
         ' GrpSystemInfo
         ' 
         GrpSystemInfo.Controls.Add(TrvSystemInfo)
-        GrpSystemInfo.Font = New Font("Segoe UI", 9.0F, FontStyle.Bold)
+        GrpSystemInfo.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
         GrpSystemInfo.Location = New Point(10, 246)
         GrpSystemInfo.Margin = New Padding(3, 2, 3, 2)
         GrpSystemInfo.Name = "GrpSystemInfo"
@@ -295,7 +309,7 @@ Partial Class Form1
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Font = New Font("MV Boli", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Label1.Font = New Font("MV Boli", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label1.Location = New Point(411, 43)
         Label1.Name = "Label1"
         Label1.Size = New Size(69, 21)
@@ -314,7 +328,7 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
         ClientSize = New Size(720, 604)
@@ -353,7 +367,7 @@ Partial Class Form1
     Friend WithEvents BtnDiskDefragmenter As Button
     Friend WithEvents BtnTaskManager As Button
     Friend WithEvents BtnWindowsUpdate As Button
-    Friend WithEvents BtnDismScan As Button
+    Friend WithEvents BtnTools As Button
     Friend WithEvents BtnUninstallFiles As Button
     Friend WithEvents RtbPingOutput As RichTextBox
     Friend WithEvents TxtPingTarget As TextBox
@@ -366,4 +380,5 @@ Partial Class Form1
     Friend WithEvents txtDate As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents BtnSaveXml As Button
+    Friend WithEvents BtnSmartTest As Button
 End Class
