@@ -1,7 +1,7 @@
-﻿' Form1.vb - Main form code
-Imports System.Management ' Required for WMI (Windows Management Instrumentation)
+﻿Imports System.Management ' Required for WMI (Windows Management Instrumentation)
 Imports System.Net.NetworkInformation ' Required for Ping functionality
 Imports System.Diagnostics ' Required for launching processes
+Imports System.IO
 
 Public Class Form1
 
@@ -130,7 +130,7 @@ Public Class Form1
 
     ' --- Tool Buttons Functionality ---
 
-    Private Sub BtnSystemRestore_Click(sender As Object, e As EventArgs) Handles btnSystemRestore.Click
+    Private Sub BtnSystemRestore_Click(sender As Object, e As EventArgs) Handles BtnSystemRestore.Click
         Try
             Process.Start("rstrui.exe")
         Catch ex As Exception
@@ -138,25 +138,25 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub BtnWindowsSecurity_Click(sender As Object, e As EventArgs) Handles btnWindowsSecurity.Click
+    Private Sub BtnWindowsSecurity_Click(sender As Object, e As EventArgs) Handles BtnWindowsSecurity.Click
         Try
-            ' This command opens Windows Security app
-            Process.Start("ms-settings:windowssecurity")
+            Process.Start("cmd.exe", "/c start windowsdefender:")
         Catch ex As Exception
             MessageBox.Show("Error launching Windows Security: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
-    Private Sub BtnWindowsUpdate_Click(sender As Object, e As EventArgs) Handles btnWindowsUpdate.Click
+
+    Private Sub BtnWindowsUpdate_Click(sender As Object, e As EventArgs) Handles BtnWindowsUpdate.Click
         Try
             ' This command opens Windows Update settings
-            Process.Start("ms-settings:windowsupdate")
+            Process.Start("cmd.exe", "/c start ms-settings:windowsupdate")
         Catch ex As Exception
             MessageBox.Show("Error launching Windows Update: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
-    Private Sub BtnTaskManager_Click(sender As Object, e As EventArgs) Handles btnTaskManager.Click
+    Private Sub BtnTaskManager_Click(sender As Object, e As EventArgs) Handles BtnTaskManager.Click
         Try
             Process.Start("taskmgr.exe")
         Catch ex As Exception
@@ -164,7 +164,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub BtnDiskDefragmenter_Click(sender As Object, e As EventArgs) Handles btnDiskDefragmenter.Click
+    Private Sub BtnDiskDefragmenter_Click(sender As Object, e As EventArgs) Handles BtnDiskDefragmenter.Click
         Try
             Process.Start("dfrgui.exe")
         Catch ex As Exception
@@ -172,9 +172,9 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub BtnUninstallFiles_Click(sender As Object, e As EventArgs) Handles btnUninstallFiles.Click
+    Private Sub BtnUninstallFiles_Click(sender As Object, e As EventArgs) Handles BtnUninstallFiles.Click
         Try
-            Process.Start("appwiz.cpl") ' Opens Programs and Features (Add/Remove Programs)
+            RunAppwizCpl() ' Opens Programs and Features (Add/Remove Programs)
         Catch ex As Exception
             MessageBox.Show("Error launching Uninstall Files: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -216,7 +216,7 @@ Public Class Form1
     End Sub
     ' --- Ping Functionality ---
 
-    Private Async Sub BtnPing_Click(sender As Object, e As EventArgs) Handles btnPing.Click
+    Private Async Sub BtnPing_Click(sender As Object, e As EventArgs) Handles BtnPing.Click
         Dim target As String = TxtPingTarget.Text.Trim()
         If String.IsNullOrEmpty(target) Then
             MessageBox.Show("Please enter a target to ping.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -341,14 +341,94 @@ Public Class Form1
 
         ' GPU Info (Video Controller)
         Try
-            Dim gpuSearcher As New ManagementObjectSearcher("SELECT Name, AdapterRAM FROM Win32_VideoController")
-            For Each gpu As ManagementObject In gpuSearcher.Get()
-                Dim gpuNode As New TreeNode("GPU")
-                Dim adapterRAM As Object = gpu("AdapterRAM")
-                Dim ramSize As String = If(adapterRAM IsNot Nothing, $" ({Math.Round(CDbl(CULng(adapterRAM) / (1024 * 1024)), 0)} MB)", "")
-                gpuNode.Nodes.Add($"Name: {gpu("Name").ToString()}{ramSize}")
-                rootNode.Nodes.Add(gpuNode)
-            Next
+            Dim gpuNode As New TreeNode("GPU")
+            Dim gpuName As String = "N/A"
+            Dim vramBytes As ULong = 0
+            Dim vramReported As Boolean = False
+            Dim primaryGpuFoundWmiModern As Boolean = False
+
+            ' Try modern WMI approach first (MSFT_PhysicalGPU)
+            Try
+                ' Connect to the StandardCimv2 namespace for MSFT_PhysicalGPU
+                Dim scope As New ManagementScope("\\.\root\StandardCimv2")
+                scope.Connect()
+                Dim queryModern As New ObjectQuery("SELECT AdapterCompatibility, DedicatedVideoMemory FROM MSFT_PhysicalGPU WHERE PrimaryAdapter = True") ' Assuming PrimaryAdapter property exists or filter as needed
+                Using modernGpuSearcher As New ManagementObjectSearcher(scope, queryModern)
+                    Dim modernGpus As ManagementObjectCollection = modernGpuSearcher.Get()
+                    If modernGpus.Count > 0 Then
+                        For Each gpu As ManagementObject In modernGpus
+                            gpuName = gpu("AdapterCompatibility")?.ToString() ' Or another property for name if available
+                            If gpu("DedicatedVideoMemory") IsNot Nothing AndAlso ULong.TryParse(gpu("DedicatedVideoMemory").ToString(), vramBytes) Then
+                                vramReported = True
+                                primaryGpuFoundWmiModern = True
+                            End If
+                            ' Assuming we only want the primary GPU from this modern query
+                            Exit For
+                        Next
+                    End If
+                End Using
+            Catch exModern As Exception
+                ' Failed to get info using MSFT_PhysicalGPU, will fall back to Win32_VideoController
+                ' This catch block can be used for logging if needed, but for now, we just proceed to fallback
+            End Try
+
+            ' Fallback to Win32_VideoController if modern approach failed or didn't report VRAM
+            If Not primaryGpuFoundWmiModern OrElse Not vramReported Then
+                Dim gpuSearcher As New ManagementObjectSearcher("SELECT Name, AdapterRAM FROM Win32_VideoController")
+                For Each gpu As ManagementObject In gpuSearcher.Get()
+                    If Not primaryGpuFoundWmiModern Then ' Only update name if not already found by modern method
+                        gpuName = gpu("Name").ToString()
+                    End If
+                    If Not vramReported Then ' Only update VRAM if not already found by modern method
+                        Dim adapterRAMObj As Object = gpu("AdapterRAM")
+                        If adapterRAMObj IsNot Nothing AndAlso ULong.TryParse(adapterRAMObj.ToString(), vramBytes) Then
+                            vramReported = True
+                        End If
+                    End If
+                    ' Typically, the first one is the primary, or if MSFT_PhysicalGPU didn't specify, take the first one with VRAM
+                    If vramReported OrElse Not primaryGpuFoundWmiModern Then Exit For
+                Next
+            End If
+
+            If String.IsNullOrWhiteSpace(gpuName) OrElse gpuName = "N/A" Then
+                gpuName = "Unknown GPU" ' Default if name couldn't be determined
+            End If
+
+            Dim ramSizeDisplay As String
+            If vramReported Then
+                If vramBytes > 0 Then
+                    Dim vramGB As Double = Math.Round(CDbl(vramBytes) / (1024 * 1024 * 1024), 2)
+                    ramSizeDisplay = $" ({vramGB} GB)"
+                Else
+                    ramSizeDisplay = " (VRAM not reported or 0 MB)"
+                End If
+            Else
+                ' Attempt to use the original AdapterRAM from Win32_VideoController if MSFT_PhysicalGPU failed completely
+                ' This part is mostly redundant if the fallback logic above works, but as a safeguard:
+                Try
+                    Dim fallbackSearcher As New ManagementObjectSearcher("SELECT Name, AdapterRAM FROM Win32_VideoController")
+                    For Each gpu As ManagementObject In fallbackSearcher.Get()
+                        gpuName = gpu("Name").ToString() ' Overwrite name if we are in complete fallback
+                        Dim adapterRAMFallback As Object = gpu("AdapterRAM")
+                        If adapterRAMFallback IsNot Nothing Then
+                            Dim fallbackVramBytes As ULong = CULng(adapterRAMFallback)
+                            Dim fallbackVramMB As Double = Math.Round(CDbl(fallbackVramBytes / (1024 * 1024)), 0)
+                            ramSizeDisplay = $" ({fallbackVramMB} MB - legacy)"
+                            vramReported = True ' Mark as reported for display logic
+                        Else
+                            ramSizeDisplay = " (VRAM not available - legacy)"
+                        End If
+                        Exit For ' Take the first one
+                    Next
+                Catch exFallback As Exception
+                    ramSizeDisplay = " (Error retrieving VRAM - legacy)"
+                End Try
+                If Not vramReported Then ramSizeDisplay = " (VRAM information not available)"
+            End If
+
+            gpuNode.Nodes.Add($"Name: {gpuName}{ramSizeDisplay}")
+            rootNode.Nodes.Add(gpuNode)
+
         Catch ex As Exception
             rootNode.Nodes.Add("GPU: Error retrieving information - " & ex.Message)
         End Try
@@ -391,6 +471,15 @@ Public Class Form1
         End Try
 
         rootNode.ExpandAll() ' Expand all nodes for better visibility
+    End Sub
+    ' --- Uninstall Files Functionality ---
+    Private Sub RunAppwizCpl()
+        Try
+            ' Use the Shell function to run appwiz.cpl
+            Shell("appwiz.cpl", AppWinStyle.NormalFocus)
+        Catch ex As Exception
+            MessageBox.Show("An error occurred: " & ex.Message)
+        End Try
     End Sub
 
     ' --- Menu Strip Items ---

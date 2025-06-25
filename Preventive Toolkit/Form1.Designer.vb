@@ -45,6 +45,7 @@ Partial Class Form1
         GrpSystemInfo = New GroupBox()
         TrvSystemInfo = New TreeView()
         BtnSystemInformation = New Button()
+        txtDate = New Label()
         MenuStrip1.SuspendLayout()
         GrpToolBox.SuspendLayout()
         GrpSystemInfo.SuspendLayout()
@@ -282,6 +283,15 @@ Partial Class Form1
         BtnSystemInformation.Text = "Scan"
         BtnSystemInformation.UseVisualStyleBackColor = True
         ' 
+        ' txtDate
+        ' 
+        txtDate.Location = New Point(339, 44)
+        txtDate.Margin = New Padding(3, 2, 3, 2)
+        txtDate.Name = "txtDate"
+        txtDate.Size = New Size(674, 281)
+        txtDate.TabIndex = 0
+        txtDate.Text = DateTime.Now.ToString()
+        ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(7.0F, 15.0F)
@@ -331,4 +341,5 @@ Partial Class Form1
     Friend WithEvents BtnSystemInformation As Button
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
+    Friend WithEvents txtDate As Label
 End Class
