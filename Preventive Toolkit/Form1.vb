@@ -192,7 +192,7 @@ Public Class Form1
         Try
             Dim psi As New ProcessStartInfo
             psi.FileName = "cmd.exe"
-            psi.Arguments = "cmd /c wmic diskdrive get Caption, DeviceID, Model, Size, Status & pause"
+            psi.Arguments = "cmd /c wmic diskdrive get Caption, DeviceID, Model, Size, Status, MediaType /value & pause"
             psi.Verb = "runas" ' Request administrator privileges
             psi.UseShellExecute = True ' Required for Verb="runas"
 
@@ -516,10 +516,26 @@ Public Class Form1
     ' --- Uninstall Files Functionality ---
     Private Sub RunAppwizCpl()
         Try
-            ' Use the Shell function to run appwiz.cpl
-            Shell("appwiz.cpl", AppWinStyle.NormalFocus)
+            ' Create a ProcessStartInfo object for more control
+            Dim psi As New ProcessStartInfo()
+
+            ' Set the executable to control.exe
+            psi.FileName = "control.exe"
+
+            ' Set the arguments to open "Programs and Features" using its canonical name
+            psi.Arguments = "/name Microsoft.ProgramsAndFeatures"
+
+            ' UseShellExecute should ideally be True for this to work as expected,
+            ' as control.exe is a system command.
+            psi.UseShellExecute = True
+
+            ' Start the process
+            Process.Start(psi)
+
         Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message)
+            MessageBox.Show("An error occurred trying to open Programs and Features: " & ex.Message & Environment.NewLine &
+                        "Please ensure 'Programs and Features' is accessible on your system.", "Error Opening Control Panel Item",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 

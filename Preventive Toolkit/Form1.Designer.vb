@@ -75,13 +75,13 @@ Partial Class Form1
         ' ToggleNightModeToolStripMenuItem
         ' 
         ToggleNightModeToolStripMenuItem.Name = "ToggleNightModeToolStripMenuItem"
-        ToggleNightModeToolStripMenuItem.Size = New Size(177, 22)
+        ToggleNightModeToolStripMenuItem.Size = New Size(180, 22)
         ToggleNightModeToolStripMenuItem.Text = "Toggle &Night Mode"
         ' 
         ' ExitToolStripMenuItem
         ' 
         ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        ExitToolStripMenuItem.Size = New Size(177, 22)
+        ExitToolStripMenuItem.Size = New Size(180, 22)
         ExitToolStripMenuItem.Text = "E&xit"
         ' 
         ' HelpToolStripMenuItem
@@ -94,7 +94,7 @@ Partial Class Form1
         ' AboutToolStripMenuItem
         ' 
         AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        AboutToolStripMenuItem.Size = New Size(107, 22)
+        AboutToolStripMenuItem.Size = New Size(180, 22)
         AboutToolStripMenuItem.Text = "&About"
         ' 
         ' GrpToolBox
@@ -283,10 +283,10 @@ Partial Class Form1
         ' 
         ' TrvSystemInfo
         ' 
-        TrvSystemInfo.Location = New Point(6, 20)
+        TrvSystemInfo.Location = New Point(19, 20)
         TrvSystemInfo.Margin = New Padding(3, 2, 3, 2)
         TrvSystemInfo.Name = "TrvSystemInfo"
-        TrvSystemInfo.Size = New Size(674, 281)
+        TrvSystemInfo.Size = New Size(661, 281)
         TrvSystemInfo.TabIndex = 0
         ' 
         ' BtnSystemInformation
@@ -312,9 +312,9 @@ Partial Class Form1
         Label1.Font = New Font("MV Boli", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label1.Location = New Point(411, 43)
         Label1.Name = "Label1"
-        Label1.Size = New Size(69, 21)
+        Label1.Size = New Size(241, 21)
         Label1.TabIndex = 7
-        Label1.Text = "txtDate"
+        Label1.Text = "Monday, December 25, 2025"
         ' 
         ' BtnSaveXml
         ' 
@@ -345,7 +345,7 @@ Partial Class Form1
         MainMenuStrip = MenuStrip1
         Margin = New Padding(3, 2, 3, 2)
         Name = "Form1"
-        Text = "Preventive Maintenance Toolkit"
+        Text = "Preventive Maintenance Toolkit v1.5"
         MenuStrip1.ResumeLayout(False)
         MenuStrip1.PerformLayout()
         GrpToolBox.ResumeLayout(False)
