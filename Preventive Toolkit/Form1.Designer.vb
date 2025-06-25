@@ -46,6 +46,8 @@ Partial Class Form1
         TrvSystemInfo = New TreeView()
         BtnSystemInformation = New Button()
         txtDate = New Label()
+        Label1 = New Label()
+        BtnSaveXml = New Button()
         MenuStrip1.SuspendLayout()
         GrpToolBox.SuspendLayout()
         GrpSystemInfo.SuspendLayout()
@@ -263,7 +265,7 @@ Partial Class Form1
         GrpSystemInfo.Size = New Size(699, 311)
         GrpSystemInfo.TabIndex = 5
         GrpSystemInfo.TabStop = False
-        GrpSystemInfo.Text = "System Info Scan"
+        GrpSystemInfo.Text = "System Information"
         ' 
         ' TrvSystemInfo
         ' 
@@ -285,12 +287,30 @@ Partial Class Form1
         ' 
         ' txtDate
         ' 
-        txtDate.Location = New Point(339, 44)
-        txtDate.Margin = New Padding(3, 2, 3, 2)
+        txtDate.Location = New Point(0, 0)
         txtDate.Name = "txtDate"
-        txtDate.Size = New Size(674, 281)
+        txtDate.Size = New Size(100, 23)
         txtDate.TabIndex = 0
-        txtDate.Text = DateTime.Now.ToString()
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Font = New Font("MV Boli", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Label1.Location = New Point(411, 43)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(69, 21)
+        Label1.TabIndex = 7
+        Label1.Text = "txtDate"
+        ' 
+        ' BtnSaveXml
+        ' 
+        BtnSaveXml.Location = New Point(60, 561)
+        BtnSaveXml.Margin = New Padding(3, 2, 3, 2)
+        BtnSaveXml.Name = "BtnSaveXml"
+        BtnSaveXml.Size = New Size(44, 32)
+        BtnSaveXml.TabIndex = 8
+        BtnSaveXml.Text = "Save"
+        BtnSaveXml.UseVisualStyleBackColor = True
         ' 
         ' Form1
         ' 
@@ -298,6 +318,8 @@ Partial Class Form1
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
         ClientSize = New Size(720, 604)
+        Controls.Add(BtnSaveXml)
+        Controls.Add(Label1)
         Controls.Add(BtnSystemInformation)
         Controls.Add(GrpSystemInfo)
         Controls.Add(BtnPing)
@@ -342,4 +364,6 @@ Partial Class Form1
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents txtDate As Label
+    Friend WithEvents Label1 As Label
+    Friend WithEvents BtnSaveXml As Button
 End Class

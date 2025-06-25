@@ -2,10 +2,12 @@
 Imports System.Net.NetworkInformation ' Required for Ping functionality
 Imports System.Diagnostics ' Required for launching processes
 Imports System.IO
+Imports System.Xml
 
 Public Class Form1
 
     Private IsNightMode As Boolean = False ' Flag to track current theme mode
+    Private currentMonth As Integer ' Variable to track the current month for date display
 
     ' --- Form Initialization and Event Handlers ---
 
@@ -16,6 +18,11 @@ Public Class Form1
         Me.MaximizeBox = False ' Disable maximize button
         Me.StartPosition = FormStartPosition.CenterScreen ' Center the form on screen
         Me.Size = New Size(736, 643) ' Set a fixed size for the form, adjust as needed based on control layout
+
+        ' Initialize current month
+        currentMonth = DateTime.Now.Month
+
+        UpdateDate()
 
         ' Apply the default theme (day mode)
         ApplyTheme(IsNightMode)
@@ -132,7 +139,7 @@ Public Class Form1
 
     Private Sub BtnSystemRestore_Click(sender As Object, e As EventArgs) Handles BtnSystemRestore.Click
         Try
-            Process.Start("rstrui.exe")
+            RunSystemPropertiesProtection()
         Catch ex As Exception
             MessageBox.Show("Error launching System Restore: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -472,6 +479,22 @@ Public Class Form1
 
         rootNode.ExpandAll() ' Expand all nodes for better visibility
     End Sub
+    ' --- System Properties Protection Functionality ---
+    Private Sub RunSystemPropertiesProtection()
+        Try
+            Dim system32Path As String = Environment.GetFolderPath(Environment.SpecialFolder.System)
+            Dim systemPropertiesProtectionPath As String = Path.Combine(system32Path, "SystemPropertiesProtection.exe")
+
+            If File.Exists(systemPropertiesProtectionPath) Then
+                Process.Start(systemPropertiesProtectionPath)
+            Else
+                MessageBox.Show("SystemPropertiesProtection.exe not found in System32 folder.")
+            End If
+        Catch ex As Exception
+            MessageBox.Show("An error occurred: " & ex.Message)
+        End Try
+    End Sub
+
     ' --- Uninstall Files Functionality ---
     Private Sub RunAppwizCpl()
         Try
@@ -496,8 +519,144 @@ Public Class Form1
     End Sub
 
     Private Sub AboutToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AboutToolStripMenuItem.Click
-        MessageBox.Show("Preventive Maintenance Toolkit" & Environment.NewLine & "Version 1.0" & Environment.NewLine & "Created by Gemini", "About", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show("Preventive Maintenance Toolkit" & Environment.NewLine & "Version 1.1" & Environment.NewLine & "Created by NIA R3 IT STAFF", "About", MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+    ' --- XML Saving Functionality ---
+    Private Sub BtnSaveXml_Click(sender As Object, e As EventArgs) Handles BtnSaveXml.Click
+        Try
+            Dim saveDialog As New SaveFileDialog()
+            saveDialog.Filter = "XML Files (*.xml)|*.xml" ' Set filter to XML files
+            saveDialog.Title = "Save System Information as XML"
+
+            If saveDialog.ShowDialog() = DialogResult.OK Then
+                Dim xmlPath As String = saveDialog.FileName
+
+                ' Check if the file already exists
+                If System.IO.File.Exists(xmlPath) Then
+                    Dim overwriteResult As DialogResult = MessageBox.Show("The file already exists. Do you want to overwrite it?", "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                    If overwriteResult = DialogResult.No Then
+                        Return ' Exit if the user chooses not to overwrite
+                    End If
+                End If
+
+                ' Get XML content from the TreeView
+                ' We use TrvSystemInfo as that's where your system info is displayed
+                Dim xmlContent As String = GetXmlStringFromTreeView(TrvSystemInfo)
+
+                If Not String.IsNullOrEmpty(xmlContent) Then
+                    ' Save XML content as XML file with line breaks for readability
+                    System.IO.File.WriteAllText(xmlPath, FormatXml(xmlContent), System.Text.Encoding.UTF8)
+                    MessageBox.Show("XML file saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Else
+                    MessageBox.Show("XML content is empty or invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+            Else
+                MessageBox.Show("No file selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
+        Catch ex As Exception
+            MessageBox.Show("An error occurred while saving the XML file: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
+    Private Function FormatXml(xmlContent As String) As String
+        Dim doc As New XmlDocument()
+        Try
+            doc.LoadXml(xmlContent)
+        Catch ex As XmlException
+            ' Handle case where xmlContent is not well-formed XML
+            MessageBox.Show("The generated XML content is not valid XML and cannot be formatted. " & ex.Message, "XML Formatting Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return xmlContent ' Return original unformatted content or throw
+        End Try
 
+        Using stringWriter As New StringWriter()
+            Using xmlWriter As XmlWriter = xmlWriter.Create(stringWriter, New XmlWriterSettings() With {.Indent = True, .NewLineOnAttributes = False, .OmitXmlDeclaration = False})
+                doc.Save(xmlWriter)
+                Return stringWriter.ToString()
+            End Using
+        End Using
+    End Function
+
+    ' This function iterates through the TreeView nodes and builds an XDocument.
+    ' It assumes the first level node is the "rootNode" (e.g., "System Information")
+    ' and subsequent nodes represent categories and their details (Name: Value).
+    Private Function GetXmlStringFromTreeView(ByVal tv As TreeView) As String
+        If tv Is Nothing OrElse tv.Nodes.Count = 0 Then
+            Return ""
+        End If
+
+        Dim xmlDoc As New XDocument()
+        ' Assuming the first node in TrvSystemInfo is the overall root (e.g., "System Information")
+        ' We'll make the first node's text the root element name.
+        Dim rootNodeText As String = SanitizeXmlName(tv.Nodes(0).Text)
+        If String.IsNullOrWhiteSpace(rootNodeText) Then rootNodeText = "SystemInformation"
+
+        Dim rootElement As New XElement(rootNodeText)
+
+        ' Start processing from the children of the first node (e.g., "Operating System", "CPU", etc.)
+        For Each topLevelNode As TreeNode In tv.Nodes(0).Nodes
+            rootElement.Add(CreateXmlElementFromTreeNode(topLevelNode))
+        Next
+
+        xmlDoc.Add(rootElement)
+        Return xmlDoc.ToString()
+    End Function
+
+    Private Function CreateXmlElementFromTreeNode(ByVal node As TreeNode) As XElement
+        Dim elementName As String = SanitizeXmlName(node.Text)
+        If String.IsNullOrWhiteSpace(elementName) Then
+            elementName = "Node" ' Fallback for empty/invalid names
+        End If
+
+        Dim element As New XElement(elementName)
+
+        ' If a node is a "category" node (like "Operating System", "CPU"), its children are properties.
+        ' If a node is a "property" node (like "Name: Windows 10"), extract name and value.
+        If node.Nodes.Count = 0 Then
+            ' This is likely a leaf node containing "Key: Value"
+            Dim parts() As String = node.Text.Split(New Char() {":"}, 2) ' Split by first colon only
+            If parts.Length = 2 Then
+                Dim key As String = SanitizeXmlName(parts(0).Trim())
+                Dim value As String = parts(1).Trim()
+                If Not String.IsNullOrWhiteSpace(key) Then
+                    element.Name = key ' Use the key as the element name for properties
+                    element.Value = value
+                Else
+                    element.Value = node.Text ' Fallback if key is empty
+                End If
+            Else
+                ' If it's not "Key: Value" format, just use its text as content
+                element.Value = node.Text
+            End If
+        Else
+            ' This is a parent node (e.g., "Operating System", "GPU")
+            ' Recursively add child elements
+            For Each childNode As TreeNode In node.Nodes
+                element.Add(CreateXmlElementFromTreeNode(childNode))
+            Next
+        End If
+
+        Return element
+    End Function
+
+    ' Helper function to sanitize strings for XML element/attribute names
+    Private Function SanitizeXmlName(ByVal input As String) As String
+        If String.IsNullOrWhiteSpace(input) Then Return ""
+
+        ' Remove invalid XML name characters (e.g., spaces, colons, hyphens are common)
+        ' A more comprehensive regex might be needed for extremely varied input
+        Dim sanitized As String = System.Text.RegularExpressions.Regex.Replace(input, "[^\w\.-]", "") ' Keep alphanumeric, underscore, dot, hyphen
+
+        ' Ensure it starts with a letter or underscore (XML naming rule)
+        If sanitized.Length > 0 AndAlso Not Char.IsLetter(sanitized(0)) AndAlso sanitized(0) <> "_" Then
+            sanitized = "_" & sanitized
+        End If
+
+        ' Trim to a reasonable length if names can be very long
+        If sanitized.Length > 64 Then sanitized = sanitized.Substring(0, 64)
+
+        Return sanitized
+    End Function
+    Private Sub UpdateDate()
+        Label1.Text = DateTime.Now.ToString("dddd, MMMM dd, yyyy") ' Update the date label
+    End Sub
 End Class
