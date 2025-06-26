@@ -22,15 +22,16 @@ Partial Class Form2
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form2))
         btnBatteryReport = New Button()
         gbMaintenance = New GroupBox()
         btnSecMain = New Button()
         btnPowerOpt = New Button()
         gbRepair = New GroupBox()
+        btnUserAcc = New Button()
         btnWinTools = New Button()
         btnTroubleshoot = New Button()
         btnSpooler = New Button()
-        btnUserAcc = New Button()
         gbMaintenance.SuspendLayout()
         gbRepair.SuspendLayout()
         SuspendLayout()
@@ -87,6 +88,15 @@ Partial Class Form2
         gbRepair.TabStop = False
         gbRepair.Text = "Repair Tools"
         ' 
+        ' btnUserAcc
+        ' 
+        btnUserAcc.Location = New Point(6, 119)
+        btnUserAcc.Name = "btnUserAcc"
+        btnUserAcc.Size = New Size(133, 28)
+        btnUserAcc.TabIndex = 3
+        btnUserAcc.Text = "User Accounts"
+        btnUserAcc.UseVisualStyleBackColor = True
+        ' 
         ' btnWinTools
         ' 
         btnWinTools.Location = New Point(6, 85)
@@ -114,15 +124,6 @@ Partial Class Form2
         btnSpooler.Text = "Restart Print Spooler"
         btnSpooler.UseVisualStyleBackColor = True
         ' 
-        ' btnUserAcc
-        ' 
-        btnUserAcc.Location = New Point(6, 119)
-        btnUserAcc.Name = "btnUserAcc"
-        btnUserAcc.Size = New Size(133, 28)
-        btnUserAcc.TabIndex = 3
-        btnUserAcc.Text = "User Accounts"
-        btnUserAcc.UseVisualStyleBackColor = True
-        ' 
         ' Form2
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -130,6 +131,7 @@ Partial Class Form2
         ClientSize = New Size(302, 227)
         Controls.Add(gbRepair)
         Controls.Add(gbMaintenance)
+        Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "Form2"
         Text = "ToolBox"
         gbMaintenance.ResumeLayout(False)

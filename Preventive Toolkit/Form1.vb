@@ -13,7 +13,7 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' Set initial form properties to fix the window as requested
-        Me.Text = "Preventive Maintenance Toolkit"
+        Me.Text = "Preventive Maintenance Toolkit v1.5 " ' Set the title of the form
         Me.FormBorderStyle = FormBorderStyle.FixedSingle ' Make the window non-resizable
         Me.MaximizeBox = False ' Disable maximize button
         Me.StartPosition = FormStartPosition.CenterScreen ' Center the form on screen
@@ -504,12 +504,22 @@ Public Class Form1
             Dim systemPropertiesProtectionPath As String = Path.Combine(system32Path, "SystemPropertiesProtection.exe")
 
             If File.Exists(systemPropertiesProtectionPath) Then
-                Process.Start(systemPropertiesProtectionPath)
+                Dim startInfo As New ProcessStartInfo()
+                startInfo.FileName = systemPropertiesProtectionPath
+                startInfo.UseShellExecute = True ' Crucial for "runas" verb to work
+                startInfo.Verb = "runas" ' This requests elevation
+
+                Process.Start(startInfo)
             Else
                 MessageBox.Show("SystemPropertiesProtection.exe not found in System32 folder.")
             End If
         Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message)
+            ' Handle specific error for elevation cancellation
+            If ex.Message.Contains("canceled by the user") Then
+                MessageBox.Show("The operation was canceled by the user.")
+            Else
+                MessageBox.Show("An error occurred: " & ex.Message)
+            End If
         End Try
     End Sub
 
@@ -579,13 +589,14 @@ Public Class Form1
 
                 If Not String.IsNullOrEmpty(xmlContent) Then
                     ' Save XML content as XML file with line breaks for readability
+                    ' The FormatXml function will handle pretty printing
                     System.IO.File.WriteAllText(xmlPath, FormatXml(xmlContent), System.Text.Encoding.UTF8)
                     MessageBox.Show("XML file saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Else
-                    MessageBox.Show("XML content is empty or invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("XML content is empty or invalid. No XML file was saved.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
             Else
-                MessageBox.Show("No file selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("No file selected. XML file not saved.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
         Catch ex As Exception
             MessageBox.Show("An error occurred while saving the XML file: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -599,11 +610,19 @@ Public Class Form1
         Catch ex As XmlException
             ' Handle case where xmlContent is not well-formed XML
             MessageBox.Show("The generated XML content is not valid XML and cannot be formatted. " & ex.Message, "XML Formatting Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return xmlContent ' Return original unformatted content or throw
+            Return xmlContent ' Return original unformatted content or throw an exception
         End Try
 
         Using stringWriter As New StringWriter()
-            Using xmlWriter As XmlWriter = xmlWriter.Create(stringWriter, New XmlWriterSettings() With {.Indent = True, .NewLineOnAttributes = False, .OmitXmlDeclaration = False})
+            ' Configure XmlWriterSettings for indented and readable output
+            Dim settings As New XmlWriterSettings() With {
+            .Indent = True,
+            .NewLineOnAttributes = False, ' Keep attributes on the same line as the element
+            .OmitXmlDeclaration = False, ' Include the <?xml version="1.0" encoding="utf-8"?> declaration
+            .Encoding = System.Text.Encoding.UTF8 ' Ensure UTF-8 encoding
+        }
+
+            Using xmlWriter As XmlWriter = XmlWriter.Create(stringWriter, settings)
                 doc.Save(xmlWriter)
                 Return stringWriter.ToString()
             End Using
@@ -625,6 +644,10 @@ Public Class Form1
         If String.IsNullOrWhiteSpace(rootNodeText) Then rootNodeText = "SystemInformation"
 
         Dim rootElement As New XElement(rootNodeText)
+
+        ' --- Add Export Date and Time ---
+        Dim exportDateElement As New XElement("ExportDate", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")) ' ISO 8601 format
+        rootElement.Add(exportDateElement)
 
         ' Start processing from the children of the first node (e.g., "Operating System", "CPU", etc.)
         For Each topLevelNode As TreeNode In tv.Nodes(0).Nodes
@@ -676,17 +699,23 @@ Public Class Form1
     Private Function SanitizeXmlName(ByVal input As String) As String
         If String.IsNullOrWhiteSpace(input) Then Return ""
 
-        ' Remove invalid XML name characters (e.g., spaces, colons, hyphens are common)
-        ' A more comprehensive regex might be needed for extremely varied input
-        Dim sanitized As String = System.Text.RegularExpressions.Regex.Replace(input, "[^\w\.-]", "") ' Keep alphanumeric, underscore, dot, hyphen
+        ' Replace invalid XML name characters with an underscore
+        ' Valid XML names can start with letters or underscore, and contain letters, digits, hyphens, underscores, periods.
+        ' This regex removes anything not matching that pattern or replaces spaces with underscores.
+        Dim sanitized As String = System.Text.RegularExpressions.Regex.Replace(input, "[^\p{L}\p{N}\._-]", "_")
 
         ' Ensure it starts with a letter or underscore (XML naming rule)
         If sanitized.Length > 0 AndAlso Not Char.IsLetter(sanitized(0)) AndAlso sanitized(0) <> "_" Then
             sanitized = "_" & sanitized
         End If
 
-        ' Trim to a reasonable length if names can be very long
-        If sanitized.Length > 64 Then sanitized = sanitized.Substring(0, 64)
+        ' Ensure it doesn't start with "xml" (case-insensitive)
+        If sanitized.StartsWith("xml", StringComparison.OrdinalIgnoreCase) Then
+            sanitized = "_" & sanitized
+        End If
+
+        ' Trim to a reasonable length to prevent extremely long element names
+        If sanitized.Length > 128 Then sanitized = sanitized.Substring(0, 128)
 
         Return sanitized
     End Function

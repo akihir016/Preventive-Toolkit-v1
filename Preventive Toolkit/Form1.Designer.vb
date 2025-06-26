@@ -23,6 +23,7 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         MenuStrip1 = New MenuStrip()
         FileToolStripMenuItem = New ToolStripMenuItem()
         ToggleNightModeToolStripMenuItem = New ToolStripMenuItem()
@@ -75,13 +76,13 @@ Partial Class Form1
         ' ToggleNightModeToolStripMenuItem
         ' 
         ToggleNightModeToolStripMenuItem.Name = "ToggleNightModeToolStripMenuItem"
-        ToggleNightModeToolStripMenuItem.Size = New Size(180, 22)
+        ToggleNightModeToolStripMenuItem.Size = New Size(177, 22)
         ToggleNightModeToolStripMenuItem.Text = "Toggle &Night Mode"
         ' 
         ' ExitToolStripMenuItem
         ' 
         ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        ExitToolStripMenuItem.Size = New Size(180, 22)
+        ExitToolStripMenuItem.Size = New Size(177, 22)
         ExitToolStripMenuItem.Text = "E&xit"
         ' 
         ' HelpToolStripMenuItem
@@ -312,9 +313,9 @@ Partial Class Form1
         Label1.Font = New Font("MV Boli", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label1.Location = New Point(411, 43)
         Label1.Name = "Label1"
-        Label1.Size = New Size(241, 21)
+        Label1.Size = New Size(251, 21)
         Label1.TabIndex = 7
-        Label1.Text = "Monday, December 25, 2025"
+        Label1.Text = "Thursday, December 25, 2025"
         ' 
         ' BtnSaveXml
         ' 
@@ -341,7 +342,8 @@ Partial Class Form1
         Controls.Add(RtbPingOutput)
         Controls.Add(GrpToolBox)
         Controls.Add(MenuStrip1)
-        FormBorderStyle = FormBorderStyle.SizableToolWindow
+        FormBorderStyle = FormBorderStyle.FixedSingle
+        Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MainMenuStrip = MenuStrip1
         Margin = New Padding(3, 2, 3, 2)
         Name = "Form1"
