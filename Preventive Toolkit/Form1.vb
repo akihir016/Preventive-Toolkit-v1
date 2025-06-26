@@ -173,7 +173,11 @@ Public Class Form1
 
     Private Sub BtnDiskDefragmenter_Click(sender As Object, e As EventArgs) Handles BtnDiskDefragmenter.Click
         Try
-            Process.Start("dfrgui.exe")
+            Dim psi As New ProcessStartInfo
+            psi.FileName = "dfrgui.exe" ' Disk Defragmenter executable
+            psi.Verb = "runas" ' Request administrator privileges
+            psi.UseShellExecute = True ' Required for Verb="runas"
+            Process.Start(psi)
         Catch ex As Exception
             MessageBox.Show("Error launching Disk Defragmenter: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
