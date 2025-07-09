@@ -133,7 +133,7 @@ Partial Class Form2
         Controls.Add(gbMaintenance)
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "Form2"
-        Text = "ToolBox"
+        Text = "Toolkit"
         gbMaintenance.ResumeLayout(False)
         gbRepair.ResumeLayout(False)
         ResumeLayout(False)
