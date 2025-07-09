@@ -14,6 +14,8 @@ Public Class Form2
     Private Sub ToggleNightModeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleNightModeToolStripMenuItem.Click
         themeManager.IsNightMode = Not themeManager.IsNightMode
         themeManager.ApplyTheme(Me)
+        ' Save the new preference
+        themeManager.SaveThemePreference()
     End Sub
 
     '---- Button to generate battery report for laptops ----

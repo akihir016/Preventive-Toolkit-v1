@@ -1,8 +1,38 @@
 Imports System.Windows.Forms
 Imports System.Drawing
 
+Imports System.Configuration
+
 Public Class ThemeManager
     Public Property IsNightMode As Boolean = False
+
+    Public Sub New()
+        LoadThemePreference()
+    End Sub
+
+    Private Sub LoadThemePreference()
+        Try
+            IsNightMode = My.Settings.LastThemeIsNightMode
+        Catch ex As Configuration.SettingsPropertyNotFoundException
+            ' Setting doesn't exist, default to false (Day Mode)
+            IsNightMode = False
+            ' Optionally, save the default setting now
+            SaveThemePreference()
+        Catch ex As Exception
+            ' Handle other potential errors (e.g., file corruption)
+            System.Diagnostics.Debug.WriteLine("Error loading theme preference: " & ex.Message)
+            IsNightMode = False ' Default to Day Mode on error
+        End Try
+    End Sub
+
+    Public Sub SaveThemePreference()
+        Try
+            My.Settings.LastThemeIsNightMode = IsNightMode
+            My.Settings.Save()
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine("Error saving theme preference: " & ex.Message)
+        End Try
+    End Sub
 
     Public Sub ApplyTheme(form As Form)
         If IsNightMode Then

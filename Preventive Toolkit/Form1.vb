@@ -36,6 +36,8 @@ Public Class Form1
         themeManager.IsNightMode = Not themeManager.IsNightMode
         ' Apply the new theme
         themeManager.ApplyTheme(Me)
+        ' Save the new preference
+        themeManager.SaveThemePreference()
     End Sub
 
     ' --- Tool Buttons Functionality ---
