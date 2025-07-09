@@ -3,10 +3,11 @@ Imports System.Net.NetworkInformation ' Required for Ping functionality
 Imports System.Diagnostics ' Required for launching processes
 Imports System.IO
 Imports System.Xml
+Imports Preventive_Toolkit.Helpers
 
 Public Class Form1
 
-    Private IsNightMode As Boolean = False ' Flag to track current theme mode
+    Private themeManager As New ThemeManager()
     Private currentMonth As Integer ' Variable to track the current month for date display
 
     ' --- Form Initialization and Event Handlers ---
@@ -25,114 +26,18 @@ Public Class Form1
         UpdateDate()
 
         ' Apply the default theme (day mode)
-        ApplyTheme(IsNightMode)
+        themeManager.ApplyTheme(Me)
     End Sub
 
     ' --- Theme Management (Night Mode) ---
 
     Private Sub ToggleNightModeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleNightModeToolStripMenuItem.Click
         ' Toggle the night mode flag
-        IsNightMode = Not IsNightMode
+        themeManager.IsNightMode = Not themeManager.IsNightMode
         ' Apply the new theme
-        ApplyTheme(IsNightMode)
-    End Sub
-
-    Private Sub ApplyTheme(isNight As Boolean)
-        If isNight Then
-            ' Night Mode Colors
-            Me.BackColor = Color.FromArgb(45, 45, 48) ' Dark background
-            Me.ForeColor = Color.White ' Light text
-            MenuStrip1.BackColor = Color.FromArgb(30, 30, 30)
-            MenuStrip1.ForeColor = Color.White
-
-            ' Apply to all controls on the form
-            For Each ctrl As Control In Me.Controls
-                SetControlTheme(ctrl, True)
-            Next
-        Else
-            ' Day Mode Colors (default)
-            Me.BackColor = SystemColors.Control ' Standard Windows background
-            Me.ForeColor = SystemColors.ControlText ' Standard Windows text
-            MenuStrip1.BackColor = SystemColors.MenuBar
-            MenuStrip1.ForeColor = SystemColors.ControlText
-
-            ' Apply to all controls on the form
-            For Each ctrl As Control In Me.Controls
-                SetControlTheme(ctrl, False)
-            Next
-        End If
-    End Sub
-
-    Private Sub SetControlTheme(ctrl As Control, isNight As Boolean)
-        If isNight Then
-            ' Apply night mode colors
-            ctrl.BackColor = Color.FromArgb(60, 60, 63) ' Slightly lighter dark for controls
-            ctrl.ForeColor = Color.White
-
-            ' Specific adjustments for certain control types
-            If TypeOf ctrl Is Button Then
-                Dim btn As Button = CType(ctrl, Button)
-                btn.FlatStyle = FlatStyle.Flat
-                btn.FlatAppearance.BorderColor = Color.FromArgb(90, 90, 90)
-                btn.FlatAppearance.BorderSize = 1
-                btn.BackColor = Color.FromArgb(70, 70, 73)
-                btn.ForeColor = Color.White
-            ElseIf TypeOf ctrl Is GroupBox Then
-                Dim gb As GroupBox = CType(ctrl, GroupBox)
-                gb.ForeColor = Color.White
-            ElseIf TypeOf ctrl Is RichTextBox Then
-                Dim rtb As RichTextBox = CType(ctrl, RichTextBox)
-                rtb.BackColor = Color.FromArgb(30, 30, 30)
-                rtb.ForeColor = Color.LightGray
-            ElseIf TypeOf ctrl Is TextBox Then
-                Dim txt As TextBox = CType(ctrl, TextBox)
-                txt.BackColor = Color.FromArgb(30, 30, 30)
-                txt.ForeColor = Color.LightGray
-            ElseIf TypeOf ctrl Is TreeView Then
-                Dim tv As TreeView = CType(ctrl, TreeView)
-                tv.BackColor = Color.FromArgb(30, 30, 30)
-                tv.ForeColor = Color.LightGray
-                tv.LineColor = Color.Gray ' For tree view lines
-            ElseIf TypeOf ctrl Is Panel Then
-                ctrl.BackColor = Color.FromArgb(60, 60, 63)
-            End If
-        Else
-            ' Apply day mode colors
-            ctrl.BackColor = SystemColors.Control
-            ctrl.ForeColor = SystemColors.ControlText
-
-            If TypeOf ctrl Is Button Then
-                Dim btn As Button = CType(ctrl, Button)
-                btn.FlatStyle = FlatStyle.Standard
-                btn.FlatAppearance.BorderColor = SystemColors.ControlDark
-                btn.FlatAppearance.BorderSize = 0
-                btn.BackColor = SystemColors.Control
-                btn.ForeColor = SystemColors.ControlText
-            ElseIf TypeOf ctrl Is GroupBox Then
-                Dim gb As GroupBox = CType(ctrl, GroupBox)
-                gb.ForeColor = SystemColors.ControlText
-            ElseIf TypeOf ctrl Is RichTextBox Then
-                Dim rtb As RichTextBox = CType(ctrl, RichTextBox)
-                rtb.BackColor = Color.White
-                rtb.ForeColor = SystemColors.ControlText
-            ElseIf TypeOf ctrl Is TextBox Then
-                Dim txt As TextBox = CType(ctrl, TextBox)
-                txt.BackColor = Color.White
-                txt.ForeColor = SystemColors.ControlText
-            ElseIf TypeOf ctrl Is TreeView Then
-                Dim tv As TreeView = CType(ctrl, TreeView)
-                tv.BackColor = Color.White
-                tv.ForeColor = SystemColors.ControlText
-                tv.LineColor = SystemColors.ControlDark ' For tree view lines
-            ElseIf TypeOf ctrl Is Panel Then
-                ctrl.BackColor = SystemColors.Control
-            End If
-        End If
-
-        ' Recursively apply theme to child controls
-        For Each childCtrl As Control In ctrl.Controls
-            SetControlTheme(childCtrl, isNight)
-        Next
+        themeManager.ApplyTheme(Me)
+        ' Save the new preference
+        themeManager.SaveThemePreference()
     End Sub
 
     ' --- Tool Buttons Functionality ---
@@ -195,17 +100,62 @@ Public Class Form1
     Private Sub BtnSmartTest_Click(sender As Object, e As EventArgs) Handles BtnSmartTest.Click
         Try
             Dim psi As New ProcessStartInfo
-            psi.FileName = "cmd.exe"
-            psi.Arguments = "cmd /c wmic diskdrive get Caption, DeviceID, Model, Size, Status, MediaType /value & pause"
+            psi.FileName = "wmic"
+            psi.Arguments = "diskdrive get Caption, DeviceID, Model, Size, Status, MediaType /value"
+            psi.RedirectStandardOutput = True
+            psi.UseShellExecute = False
+            psi.CreateNoWindow = True
             psi.Verb = "runas" ' Request administrator privileges
-            psi.UseShellExecute = True ' Required for Verb="runas"
 
-            Process.Start(psi)
+            Dim process As Process = Process.Start(psi)
+            Dim output As String = process.StandardOutput.ReadToEnd()
+            process.WaitForExit()
+
+            If TrvSystemInfo.Nodes.Count = 0 Then
+                MessageBox.Show("Please load System Information first before retrieving SMART status.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Return
+            End If
+
+            ' Find or create the "SMART Status" node
+            Dim rootNode As TreeNode = TrvSystemInfo.Nodes(0) ' Assuming "System Information" is the root
+            Dim smartNode As TreeNode = Nothing
+            For Each node As TreeNode In rootNode.Nodes
+                If node.Text = "SMART Status" Then
+                    smartNode = node
+                    Exit For
+                End If
+            Next
+
+            If smartNode Is Nothing Then
+                smartNode = New TreeNode("SMART Status")
+                rootNode.Nodes.Add(smartNode)
+            Else
+                smartNode.Nodes.Clear() ' Clear previous SMART results
+            End If
+
+            ' Parse and display SMART information
+            Dim lines() As String = output.Trim().Split(New String() {Environment.NewLine & Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+            For Each diskInfo As String In lines
+                Dim diskNode As New TreeNode("Disk")
+                Dim properties() As String = diskInfo.Split(New String() {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+                For Each prop As String In properties
+                    If prop.Contains("=") Then
+                        diskNode.Nodes.Add(prop.Trim())
+                    End If
+                Next
+                If diskNode.Nodes.Count > 0 Then
+                    smartNode.Nodes.Add(diskNode)
+                End If
+            Next
+
+            rootNode.ExpandAll() ' Expand all nodes for better visibility
+            MessageBox.Show("SMART information retrieved and displayed.", "SMART Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
         Catch ex As ComponentModel.Win32Exception
             ' Handle case where user cancels UAC prompt or other admin rights issues
-            MessageBox.Show("Operation cancelled or administrator privileges denied.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("Operation cancelled or administrator privileges denied while trying to retrieve SMART status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Catch ex As Exception
-            MessageBox.Show("Error HDD Smart Test: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Error retrieving HDD SMART Test: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
     '--- DISM Commands Functionality ---

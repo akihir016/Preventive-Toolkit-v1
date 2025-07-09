@@ -2,10 +2,20 @@
 Imports System.ServiceProcess
 Imports System.Diagnostics
 Imports System.Security.Principal
+Imports Preventive_Toolkit.Helpers
 
 Public Class Form2
-    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    Private themeManager As New ThemeManager()
 
+    Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        themeManager.ApplyTheme(Me)
+    End Sub
+
+    Private Sub ToggleNightModeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleNightModeToolStripMenuItem.Click
+        themeManager.IsNightMode = Not themeManager.IsNightMode
+        themeManager.ApplyTheme(Me)
+        ' Save the new preference
+        themeManager.SaveThemePreference()
     End Sub
 
     '---- Button to generate battery report for laptops ----
