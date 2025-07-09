@@ -34,6 +34,10 @@ Partial Class Form2
         btnSpooler = New Button()
         gbMaintenance.SuspendLayout()
         gbRepair.SuspendLayout()
+        MenuStrip1 = New MenuStrip()
+        ThemeToolStripMenuItem = New ToolStripMenuItem()
+        ToggleNightModeToolStripMenuItem = New ToolStripMenuItem()
+        MenuStrip1.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnBatteryReport
@@ -124,6 +128,28 @@ Partial Class Form2
         btnSpooler.Text = "Restart Print Spooler"
         btnSpooler.UseVisualStyleBackColor = True
         ' 
+        ' MenuStrip1
+        '
+        MenuStrip1.Items.AddRange(New ToolStripItem() {ThemeToolStripMenuItem})
+        MenuStrip1.Location = New Point(0, 0)
+        MenuStrip1.Name = "MenuStrip1"
+        MenuStrip1.Size = New Size(302, 24)
+        MenuStrip1.TabIndex = 3
+        MenuStrip1.Text = "MenuStrip1"
+        '
+        ' ThemeToolStripMenuItem
+        '
+        ThemeToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {ToggleNightModeToolStripMenuItem})
+        ThemeToolStripMenuItem.Name = "ThemeToolStripMenuItem"
+        ThemeToolStripMenuItem.Size = New Size(55, 20)
+        ThemeToolStripMenuItem.Text = "Theme"
+        '
+        ' ToggleNightModeToolStripMenuItem
+        '
+        ToggleNightModeToolStripMenuItem.Name = "ToggleNightModeToolStripMenuItem"
+        ToggleNightModeToolStripMenuItem.Size = New Size(180, 22)
+        ToggleNightModeToolStripMenuItem.Text = "Toggle Night Mode"
+        '
         ' Form2
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
@@ -131,12 +157,17 @@ Partial Class Form2
         ClientSize = New Size(302, 227)
         Controls.Add(gbRepair)
         Controls.Add(gbMaintenance)
+        Controls.Add(MenuStrip1)
+        MainMenuStrip = MenuStrip1
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "Form2"
         Text = "Toolkit"
         gbMaintenance.ResumeLayout(False)
         gbRepair.ResumeLayout(False)
+        MenuStrip1.ResumeLayout(False)
+        MenuStrip1.PerformLayout()
         ResumeLayout(False)
+        PerformLayout()
     End Sub
 
     Friend WithEvents btnBatteryReport As Button
@@ -148,4 +179,7 @@ Partial Class Form2
     Friend WithEvents btnWinTools As Button
     Friend WithEvents btnTroubleshoot As Button
     Friend WithEvents btnUserAcc As Button
+    Friend WithEvents MenuStrip1 As MenuStrip
+    Friend WithEvents ThemeToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ToggleNightModeToolStripMenuItem As ToolStripMenuItem
 End Class
