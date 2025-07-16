@@ -50,6 +50,7 @@ Partial Class Form1
         txtDate = New Label()
         Label1 = New Label()
         BtnSaveXml = New Button()
+        Button3 = New Button()
         MenuStrip1.SuspendLayout()
         GrpToolBox.SuspendLayout()
         GrpSystemInfo.SuspendLayout()
@@ -61,8 +62,8 @@ Partial Class Form1
         MenuStrip1.Items.AddRange(New ToolStripItem() {FileToolStripMenuItem, HelpToolStripMenuItem})
         MenuStrip1.Location = New Point(0, 0)
         MenuStrip1.Name = "MenuStrip1"
-        MenuStrip1.Padding = New Padding(5, 2, 0, 2)
-        MenuStrip1.Size = New Size(720, 24)
+        MenuStrip1.Padding = New Padding(6, 3, 0, 3)
+        MenuStrip1.Size = New Size(823, 30)
         MenuStrip1.TabIndex = 0
         MenuStrip1.Text = "MenuStrip1"
         ' 
@@ -70,32 +71,34 @@ Partial Class Form1
         ' 
         FileToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {ToggleNightModeToolStripMenuItem, ExitToolStripMenuItem})
         FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        FileToolStripMenuItem.Size = New Size(37, 20)
+        FileToolStripMenuItem.Size = New Size(46, 24)
         FileToolStripMenuItem.Text = "&File"
         ' 
         ' ToggleNightModeToolStripMenuItem
         ' 
+        ToggleNightModeToolStripMenuItem.Checked = True
+        ToggleNightModeToolStripMenuItem.CheckState = CheckState.Checked
         ToggleNightModeToolStripMenuItem.Name = "ToggleNightModeToolStripMenuItem"
-        ToggleNightModeToolStripMenuItem.Size = New Size(177, 22)
+        ToggleNightModeToolStripMenuItem.Size = New Size(224, 26)
         ToggleNightModeToolStripMenuItem.Text = "Toggle &Night Mode"
         ' 
         ' ExitToolStripMenuItem
         ' 
         ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        ExitToolStripMenuItem.Size = New Size(177, 22)
+        ExitToolStripMenuItem.Size = New Size(224, 26)
         ExitToolStripMenuItem.Text = "E&xit"
         ' 
         ' HelpToolStripMenuItem
         ' 
         HelpToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {AboutToolStripMenuItem})
         HelpToolStripMenuItem.Name = "HelpToolStripMenuItem"
-        HelpToolStripMenuItem.Size = New Size(44, 20)
+        HelpToolStripMenuItem.Size = New Size(55, 24)
         HelpToolStripMenuItem.Text = "&Help"
         ' 
         ' AboutToolStripMenuItem
         ' 
         AboutToolStripMenuItem.Name = "AboutToolStripMenuItem"
-        AboutToolStripMenuItem.Size = New Size(180, 22)
+        AboutToolStripMenuItem.Size = New Size(133, 26)
         AboutToolStripMenuItem.Text = "&About"
         ' 
         ' GrpToolBox
@@ -111,11 +114,9 @@ Partial Class Form1
         GrpToolBox.Controls.Add(BtnWindowsSecurity)
         GrpToolBox.Controls.Add(BtnSystemRestore)
         GrpToolBox.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        GrpToolBox.Location = New Point(10, 34)
-        GrpToolBox.Margin = New Padding(3, 2, 3, 2)
+        GrpToolBox.Location = New Point(11, 45)
         GrpToolBox.Name = "GrpToolBox"
-        GrpToolBox.Padding = New Padding(3, 2, 3, 2)
-        GrpToolBox.Size = New Size(314, 208)
+        GrpToolBox.Size = New Size(359, 277)
         GrpToolBox.TabIndex = 1
         GrpToolBox.TabStop = False
         GrpToolBox.Text = "ToolBox"
@@ -123,10 +124,9 @@ Partial Class Form1
         ' BtnSmartTest
         ' 
         BtnSmartTest.Font = New Font("Segoe UI", 9F)
-        BtnSmartTest.Location = New Point(175, 134)
-        BtnSmartTest.Margin = New Padding(3, 2, 3, 2)
+        BtnSmartTest.Location = New Point(200, 179)
         BtnSmartTest.Name = "BtnSmartTest"
-        BtnSmartTest.Size = New Size(118, 30)
+        BtnSmartTest.Size = New Size(135, 40)
         BtnSmartTest.TabIndex = 9
         BtnSmartTest.Text = "Hard Disk Smart Test"
         BtnSmartTest.TextAlign = ContentAlignment.MiddleLeft
@@ -135,10 +135,9 @@ Partial Class Form1
         ' Button2
         ' 
         Button2.Font = New Font("Segoe UI", 9F)
-        Button2.Location = New Point(242, 97)
-        Button2.Margin = New Padding(3, 2, 3, 2)
+        Button2.Location = New Point(277, 129)
         Button2.Name = "Button2"
-        Button2.Size = New Size(51, 30)
+        Button2.Size = New Size(58, 40)
         Button2.TabIndex = 8
         Button2.Text = "Repair"
         Button2.TextAlign = ContentAlignment.MiddleLeft
@@ -147,10 +146,9 @@ Partial Class Form1
         ' Button1
         ' 
         Button1.Font = New Font("Segoe UI", 9F)
-        Button1.Location = New Point(175, 97)
-        Button1.Margin = New Padding(3, 2, 3, 2)
+        Button1.Location = New Point(200, 129)
         Button1.Name = "Button1"
-        Button1.Size = New Size(71, 30)
+        Button1.Size = New Size(81, 40)
         Button1.TabIndex = 7
         Button1.Text = "DISM Scan"
         Button1.TextAlign = ContentAlignment.MiddleLeft
@@ -159,10 +157,9 @@ Partial Class Form1
         ' BtnTools
         ' 
         BtnTools.Font = New Font("Segoe UI", 9F)
-        BtnTools.Location = New Point(175, 59)
-        BtnTools.Margin = New Padding(3, 2, 3, 2)
+        BtnTools.Location = New Point(200, 79)
         BtnTools.Name = "BtnTools"
-        BtnTools.Size = New Size(118, 30)
+        BtnTools.Size = New Size(135, 40)
         BtnTools.TabIndex = 6
         BtnTools.Text = "Other Tools"
         BtnTools.TextAlign = ContentAlignment.MiddleLeft
@@ -171,10 +168,9 @@ Partial Class Form1
         ' BtnUninstallFiles
         ' 
         BtnUninstallFiles.Font = New Font("Segoe UI", 9F)
-        BtnUninstallFiles.Location = New Point(175, 20)
-        BtnUninstallFiles.Margin = New Padding(3, 2, 3, 2)
+        BtnUninstallFiles.Location = New Point(200, 27)
         BtnUninstallFiles.Name = "BtnUninstallFiles"
-        BtnUninstallFiles.Size = New Size(118, 30)
+        BtnUninstallFiles.Size = New Size(135, 40)
         BtnUninstallFiles.TabIndex = 5
         BtnUninstallFiles.Text = "Uninstall Files"
         BtnUninstallFiles.TextAlign = ContentAlignment.MiddleLeft
@@ -183,10 +179,9 @@ Partial Class Form1
         ' BtnDiskDefragmenter
         ' 
         BtnDiskDefragmenter.Font = New Font("Segoe UI", 9F)
-        BtnDiskDefragmenter.Location = New Point(19, 172)
-        BtnDiskDefragmenter.Margin = New Padding(3, 2, 3, 2)
+        BtnDiskDefragmenter.Location = New Point(22, 229)
         BtnDiskDefragmenter.Name = "BtnDiskDefragmenter"
-        BtnDiskDefragmenter.Size = New Size(121, 30)
+        BtnDiskDefragmenter.Size = New Size(147, 40)
         BtnDiskDefragmenter.TabIndex = 4
         BtnDiskDefragmenter.Text = " Disk Defragmenter"
         BtnDiskDefragmenter.TextAlign = ContentAlignment.MiddleLeft
@@ -195,10 +190,9 @@ Partial Class Form1
         ' BtnTaskManager
         ' 
         BtnTaskManager.Font = New Font("Segoe UI", 9F)
-        BtnTaskManager.Location = New Point(19, 134)
-        BtnTaskManager.Margin = New Padding(3, 2, 3, 2)
+        BtnTaskManager.Location = New Point(22, 179)
         BtnTaskManager.Name = "BtnTaskManager"
-        BtnTaskManager.Size = New Size(121, 30)
+        BtnTaskManager.Size = New Size(147, 40)
         BtnTaskManager.TabIndex = 3
         BtnTaskManager.Text = "Task Manager"
         BtnTaskManager.TextAlign = ContentAlignment.MiddleLeft
@@ -207,10 +201,9 @@ Partial Class Form1
         ' BtnWindowsUpdate
         ' 
         BtnWindowsUpdate.Font = New Font("Segoe UI", 9F)
-        BtnWindowsUpdate.Location = New Point(19, 97)
-        BtnWindowsUpdate.Margin = New Padding(3, 2, 3, 2)
+        BtnWindowsUpdate.Location = New Point(22, 129)
         BtnWindowsUpdate.Name = "BtnWindowsUpdate"
-        BtnWindowsUpdate.Size = New Size(121, 30)
+        BtnWindowsUpdate.Size = New Size(147, 40)
         BtnWindowsUpdate.TabIndex = 2
         BtnWindowsUpdate.Text = " Windows Update"
         BtnWindowsUpdate.TextAlign = ContentAlignment.MiddleLeft
@@ -219,10 +212,9 @@ Partial Class Form1
         ' BtnWindowsSecurity
         ' 
         BtnWindowsSecurity.Font = New Font("Segoe UI", 9F)
-        BtnWindowsSecurity.Location = New Point(19, 59)
-        BtnWindowsSecurity.Margin = New Padding(3, 2, 3, 2)
+        BtnWindowsSecurity.Location = New Point(22, 79)
         BtnWindowsSecurity.Name = "BtnWindowsSecurity"
-        BtnWindowsSecurity.Size = New Size(121, 30)
+        BtnWindowsSecurity.Size = New Size(147, 40)
         BtnWindowsSecurity.TabIndex = 1
         BtnWindowsSecurity.Text = "Windows Security"
         BtnWindowsSecurity.TextAlign = ContentAlignment.MiddleLeft
@@ -231,10 +223,9 @@ Partial Class Form1
         ' BtnSystemRestore
         ' 
         BtnSystemRestore.Font = New Font("Segoe UI", 9F)
-        BtnSystemRestore.Location = New Point(19, 20)
-        BtnSystemRestore.Margin = New Padding(3, 2, 3, 2)
+        BtnSystemRestore.Location = New Point(22, 27)
         BtnSystemRestore.Name = "BtnSystemRestore"
-        BtnSystemRestore.Size = New Size(121, 30)
+        BtnSystemRestore.Size = New Size(147, 40)
         BtnSystemRestore.TabIndex = 0
         BtnSystemRestore.Text = " System Restore"
         BtnSystemRestore.TextAlign = ContentAlignment.MiddleLeft
@@ -242,29 +233,26 @@ Partial Class Form1
         ' 
         ' RtbPingOutput
         ' 
-        RtbPingOutput.Location = New Point(339, 73)
-        RtbPingOutput.Margin = New Padding(3, 2, 3, 2)
+        RtbPingOutput.Location = New Point(387, 97)
         RtbPingOutput.Name = "RtbPingOutput"
         RtbPingOutput.ReadOnly = True
-        RtbPingOutput.Size = New Size(369, 140)
+        RtbPingOutput.Size = New Size(421, 185)
         RtbPingOutput.TabIndex = 2
         RtbPingOutput.Text = ""
         ' 
         ' TxtPingTarget
         ' 
-        TxtPingTarget.Location = New Point(415, 219)
-        TxtPingTarget.Margin = New Padding(3, 2, 3, 2)
+        TxtPingTarget.Location = New Point(474, 292)
         TxtPingTarget.Name = "TxtPingTarget"
-        TxtPingTarget.Size = New Size(175, 23)
+        TxtPingTarget.Size = New Size(199, 27)
         TxtPingTarget.TabIndex = 3
         TxtPingTarget.Text = "google.com"
         ' 
         ' BtnPing
         ' 
-        BtnPing.Location = New Point(339, 217)
-        BtnPing.Margin = New Padding(3, 2, 3, 2)
+        BtnPing.Location = New Point(387, 289)
         BtnPing.Name = "BtnPing"
-        BtnPing.Size = New Size(70, 25)
+        BtnPing.Size = New Size(80, 33)
         BtnPing.TabIndex = 4
         BtnPing.Text = "Ping"
         BtnPing.UseVisualStyleBackColor = True
@@ -273,29 +261,25 @@ Partial Class Form1
         ' 
         GrpSystemInfo.Controls.Add(TrvSystemInfo)
         GrpSystemInfo.Font = New Font("Segoe UI", 9F, FontStyle.Bold)
-        GrpSystemInfo.Location = New Point(10, 246)
-        GrpSystemInfo.Margin = New Padding(3, 2, 3, 2)
+        GrpSystemInfo.Location = New Point(11, 328)
         GrpSystemInfo.Name = "GrpSystemInfo"
-        GrpSystemInfo.Padding = New Padding(3, 2, 3, 2)
-        GrpSystemInfo.Size = New Size(699, 311)
+        GrpSystemInfo.Size = New Size(799, 415)
         GrpSystemInfo.TabIndex = 5
         GrpSystemInfo.TabStop = False
         GrpSystemInfo.Text = "System Information"
         ' 
         ' TrvSystemInfo
         ' 
-        TrvSystemInfo.Location = New Point(19, 20)
-        TrvSystemInfo.Margin = New Padding(3, 2, 3, 2)
+        TrvSystemInfo.Location = New Point(22, 27)
         TrvSystemInfo.Name = "TrvSystemInfo"
-        TrvSystemInfo.Size = New Size(661, 281)
+        TrvSystemInfo.Size = New Size(755, 373)
         TrvSystemInfo.TabIndex = 0
         ' 
         ' BtnSystemInformation
         ' 
-        BtnSystemInformation.Location = New Point(10, 561)
-        BtnSystemInformation.Margin = New Padding(3, 2, 3, 2)
+        BtnSystemInformation.Location = New Point(11, 748)
         BtnSystemInformation.Name = "BtnSystemInformation"
-        BtnSystemInformation.Size = New Size(44, 32)
+        BtnSystemInformation.Size = New Size(50, 43)
         BtnSystemInformation.TabIndex = 6
         BtnSystemInformation.Text = "Scan"
         BtnSystemInformation.UseVisualStyleBackColor = True
@@ -311,28 +295,37 @@ Partial Class Form1
         ' 
         Label1.AutoSize = True
         Label1.Font = New Font("MV Boli", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Label1.Location = New Point(411, 43)
+        Label1.Location = New Point(470, 57)
         Label1.Name = "Label1"
-        Label1.Size = New Size(251, 21)
+        Label1.Size = New Size(309, 26)
         Label1.TabIndex = 7
         Label1.Text = "Thursday, December 25, 2025"
         ' 
         ' BtnSaveXml
         ' 
-        BtnSaveXml.Location = New Point(60, 561)
-        BtnSaveXml.Margin = New Padding(3, 2, 3, 2)
+        BtnSaveXml.Location = New Point(69, 748)
         BtnSaveXml.Name = "BtnSaveXml"
-        BtnSaveXml.Size = New Size(44, 32)
+        BtnSaveXml.Size = New Size(50, 43)
         BtnSaveXml.TabIndex = 8
         BtnSaveXml.Text = "Save"
         BtnSaveXml.UseVisualStyleBackColor = True
         ' 
+        ' Button3
+        ' 
+        Button3.Location = New Point(125, 748)
+        Button3.Name = "Button3"
+        Button3.Size = New Size(57, 43)
+        Button3.TabIndex = 9
+        Button3.Text = "Clear"
+        Button3.UseVisualStyleBackColor = True
+        ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         AutoSize = True
-        ClientSize = New Size(720, 604)
+        ClientSize = New Size(823, 805)
+        Controls.Add(Button3)
         Controls.Add(BtnSaveXml)
         Controls.Add(Label1)
         Controls.Add(BtnSystemInformation)
@@ -345,7 +338,6 @@ Partial Class Form1
         FormBorderStyle = FormBorderStyle.FixedSingle
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MainMenuStrip = MenuStrip1
-        Margin = New Padding(3, 2, 3, 2)
         Name = "Form1"
         Text = "Preventive Maintenance Toolkit v1.5"
         MenuStrip1.ResumeLayout(False)
@@ -383,4 +375,6 @@ Partial Class Form1
     Friend WithEvents Label1 As Label
     Friend WithEvents BtnSaveXml As Button
     Friend WithEvents BtnSmartTest As Button
+    Friend WithEvents BtnClearTree As Button
+    Friend WithEvents Button3 As Button
 End Class

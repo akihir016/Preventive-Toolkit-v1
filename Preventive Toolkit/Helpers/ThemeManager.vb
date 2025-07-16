@@ -12,14 +12,14 @@ Public Class ThemeManager
 
     Private Sub LoadThemePreference()
         Try
-            IsNightMode = My.Settings.LastThemeIsNightMode
-        Catch ex As Configuration.SettingsPropertyNotFoundException
-            ' Setting doesn't exist, default to false (Day Mode)
-            IsNightMode = False
-            ' Optionally, save the default setting now
-            SaveThemePreference()
+            Dim themeSetting As String = ConfigurationManager.AppSettings("LastThemeIsNightMode")
+            If Not String.IsNullOrEmpty(themeSetting) Then
+                IsNightMode = Boolean.Parse(themeSetting)
+            Else
+                IsNightMode = False ' Default value
+            End If
         Catch ex As Exception
-            ' Handle other potential errors (e.g., file corruption)
+            ' Handle errors (e.g., setting not found, file corruption)
             System.Diagnostics.Debug.WriteLine("Error loading theme preference: " & ex.Message)
             IsNightMode = False ' Default to Day Mode on error
         End Try
@@ -27,8 +27,14 @@ Public Class ThemeManager
 
     Public Sub SaveThemePreference()
         Try
-            My.Settings.LastThemeIsNightMode = IsNightMode
-            My.Settings.Save()
+            Dim config As Configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+            If config.AppSettings.Settings("LastThemeIsNightMode") IsNot Nothing Then
+                config.AppSettings.Settings("LastThemeIsNightMode").Value = IsNightMode.ToString()
+            Else
+                config.AppSettings.Settings.Add("LastThemeIsNightMode", IsNightMode.ToString())
+            End If
+            config.Save(ConfigurationSaveMode.Modified)
+            ConfigurationManager.RefreshSection("appSettings")
         Catch ex As Exception
             System.Diagnostics.Debug.WriteLine("Error saving theme preference: " & ex.Message)
         End Try
@@ -165,7 +171,7 @@ Public Class ThemeManager
         Else
             item.ForeColor = SystemColors.ControlText
             item.BackColor = SystemColors.MenuBar ' Match MenuStrip background
-             For Each dropDownItem As ToolStripDropDownItem In item.DropDownItems
+            For Each dropDownItem As ToolStripDropDownItem In item.DropDownItems
                 SetToolStripItemTheme(dropDownItem, False)
             Next
         End If

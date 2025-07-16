@@ -99,7 +99,7 @@ Public Class Form1
     '--- Hard Disk SMART Test Functionality ---
     Private Sub BtnSmartTest_Click(sender As Object, e As EventArgs) Handles BtnSmartTest.Click
         Try
-            Dim psi As New ProcessStartInfo
+            Dim psi As New ProcessStartInfo()
             psi.FileName = "wmic"
             psi.Arguments = "diskdrive get Caption, DeviceID, Model, Size, Status, MediaType /value"
             psi.RedirectStandardOutput = True
@@ -111,13 +111,14 @@ Public Class Form1
             Dim output As String = process.StandardOutput.ReadToEnd()
             process.WaitForExit()
 
+            Dim rootNode As TreeNode
             If TrvSystemInfo.Nodes.Count = 0 Then
-                MessageBox.Show("Please load System Information first before retrieving SMART status.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Return
+                rootNode = New TreeNode("System Information")
+                TrvSystemInfo.Nodes.Add(rootNode)
+            Else
+                rootNode = TrvSystemInfo.Nodes(0)
             End If
 
-            ' Find or create the "SMART Status" node
-            Dim rootNode As TreeNode = TrvSystemInfo.Nodes(0) ' Assuming "System Information" is the root
             Dim smartNode As TreeNode = Nothing
             For Each node As TreeNode In rootNode.Nodes
                 If node.Text = "SMART Status" Then
@@ -130,10 +131,9 @@ Public Class Form1
                 smartNode = New TreeNode("SMART Status")
                 rootNode.Nodes.Add(smartNode)
             Else
-                smartNode.Nodes.Clear() ' Clear previous SMART results
+                smartNode.Nodes.Clear()
             End If
 
-            ' Parse and display SMART information
             Dim lines() As String = output.Trim().Split(New String() {Environment.NewLine & Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
             For Each diskInfo As String In lines
                 Dim diskNode As New TreeNode("Disk")
@@ -148,11 +148,10 @@ Public Class Form1
                 End If
             Next
 
-            rootNode.ExpandAll() ' Expand all nodes for better visibility
-            MessageBox.Show("SMART information retrieved and displayed.", "SMART Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            rootNode.ExpandAll()
+            ' MessageBox.Show("SMART information retrieved and displayed.", "SMART Test", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As ComponentModel.Win32Exception
-            ' Handle case where user cancels UAC prompt or other admin rights issues
             MessageBox.Show("Operation cancelled or administrator privileges denied while trying to retrieve SMART status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Catch ex As Exception
             MessageBox.Show("Error retrieving HDD SMART Test: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -261,7 +260,7 @@ Public Class Form1
     ' --- System Information Functionality ---
 
     Private Sub BtnSystemInformation_Click(sender As Object, e As EventArgs) Handles BtnSystemInformation.Click
-        TrvSystemInfo.Nodes.Clear() ' Clear previous information
+        TrvSystemInfo.Nodes.Clear()
 
         Dim rootNode As New TreeNode("System Information")
         TrvSystemInfo.Nodes.Add(rootNode)
@@ -454,26 +453,16 @@ Public Class Form1
     ' --- System Properties Protection Functionality ---
     Private Sub RunSystemPropertiesProtection()
         Try
-            Dim system32Path As String = Environment.GetFolderPath(Environment.SpecialFolder.System)
-            Dim systemPropertiesProtectionPath As String = Path.Combine(system32Path, "SystemPropertiesProtection.exe")
-
-            If File.Exists(systemPropertiesProtectionPath) Then
-                Dim startInfo As New ProcessStartInfo()
-                startInfo.FileName = systemPropertiesProtectionPath
-                startInfo.UseShellExecute = True ' Crucial for "runas" verb to work
-                startInfo.Verb = "runas" ' This requests elevation
-
-                Process.Start(startInfo)
-            Else
-                MessageBox.Show("SystemPropertiesProtection.exe not found in System32 folder.")
-            End If
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "SystemPropertiesProtection.exe"
+            psi.UseShellExecute = True
+            psi.Verb = "runas" ' Request administrator privileges
+            Process.Start(psi)
+        Catch ex As System.ComponentModel.Win32Exception
+            ' This exception is thrown when the user cancels the UAC prompt.
+            MessageBox.Show("The operation was canceled by the user.", "Operation Canceled", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
-            ' Handle specific error for elevation cancellation
-            If ex.Message.Contains("canceled by the user") Then
-                MessageBox.Show("The operation was canceled by the user.")
-            Else
-                MessageBox.Show("An error occurred: " & ex.Message)
-            End If
+            MessageBox.Show("An error occurred while trying to open System Restore settings: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -522,16 +511,16 @@ Public Class Form1
     ' --- XML Saving Functionality ---
     Private Sub BtnSaveXml_Click(sender As Object, e As EventArgs) Handles BtnSaveXml.Click
         Try
-            Dim saveDialog As New SaveFileDialog()
+            Dim saveDialog As New SaveFileDialog
             saveDialog.Filter = "XML Files (*.xml)|*.xml" ' Set filter to XML files
             saveDialog.Title = "Save System Information as XML"
 
-            If saveDialog.ShowDialog() = DialogResult.OK Then
-                Dim xmlPath As String = saveDialog.FileName
+            If saveDialog.ShowDialog = DialogResult.OK Then
+                Dim xmlPath = saveDialog.FileName
 
                 ' Check if the file already exists
-                If System.IO.File.Exists(xmlPath) Then
-                    Dim overwriteResult As DialogResult = MessageBox.Show("The file already exists. Do you want to overwrite it?", "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If File.Exists(xmlPath) Then
+                    Dim overwriteResult = MessageBox.Show("The file already exists. Do you want to overwrite it?", "File Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                     If overwriteResult = DialogResult.No Then
                         Return ' Exit if the user chooses not to overwrite
                     End If
@@ -539,12 +528,12 @@ Public Class Form1
 
                 ' Get XML content from the TreeView
                 ' We use TrvSystemInfo as that's where your system info is displayed
-                Dim xmlContent As String = GetXmlStringFromTreeView(TrvSystemInfo)
+                Dim xmlContent = GetXmlStringFromTreeView(TrvSystemInfo)
 
                 If Not String.IsNullOrEmpty(xmlContent) Then
                     ' Save XML content as XML file with line breaks for readability
                     ' The FormatXml function will handle pretty printing
-                    System.IO.File.WriteAllText(xmlPath, FormatXml(xmlContent), System.Text.Encoding.UTF8)
+                    File.WriteAllText(xmlPath, FormatXml(xmlContent), System.Text.Encoding.UTF8)
                     MessageBox.Show("XML file saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Else
                     MessageBox.Show("XML content is empty or invalid. No XML file was saved.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -681,5 +670,7 @@ Public Class Form1
         Form2.Show() ' Show the second form for Other tools
     End Sub
 
-
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        TrvSystemInfo.Nodes.Clear()
+    End Sub
 End Class

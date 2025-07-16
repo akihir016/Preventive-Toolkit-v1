@@ -4,18 +4,19 @@ Imports System.IO
 Public Class BatteryReportGenerator
     ' Method to generate the battery report
     Public Sub GenerateReport()
-        ' Define the folder path
-        Dim folderPath As String = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Battery-Report")
+        ' Define the folder path in the user's Documents folder
+        Dim documentsPath As String = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+        Dim appFolder As String = Path.Combine(documentsPath, "Preventive Maintenance Toolkit", "Battery-Report")
 
         ' Check if the folder exists, if not, create it
-        If Not Directory.Exists(folderPath) Then
-            Directory.CreateDirectory(folderPath)
+        If Not Directory.Exists(appFolder) Then
+            Directory.CreateDirectory(appFolder)
         End If
 
         ' Get the computer name and define the file path for the battery report
         Dim computerName As String = Environment.MachineName
         Dim reportFileName As String = $"{computerName}_battery_report.html"
-        Dim reportFilePath As String = Path.Combine(folderPath, reportFileName)
+        Dim reportFilePath As String = Path.Combine(appFolder, reportFileName)
 
         ' Create the process to run the powercfg command
         Dim process As New Process()
@@ -36,7 +37,7 @@ Public Class BatteryReportGenerator
 
             ' Open the containing folder if the user clicks Yes
             If result = DialogResult.Yes Then
-                Process.Start("explorer.exe", folderPath)
+                Process.Start("explorer.exe", appFolder)
             End If
 
         Catch ex As Exception
